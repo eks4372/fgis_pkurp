@@ -5,7 +5,7 @@ import configparser
 settings = configparser.ConfigParser()
 settings.read('settings.ini', encoding="utf-8")
 db_path = settings['db']['path']
-#  для бд, хранящихся в виде файла
+##  для бд, хранящихся в виде файла
 # if not os.path.isfile(db_path):
 #     input(f'[ВНИМАНИЕ!] отсутствует файл базы данных {db_path}, нажмите enter для создания файла ')
 conn = SqliteDatabase(db_path)
