@@ -216,7 +216,7 @@ def take_face_(browser, reg_num, subject, inn, reg_name):
     print(reg_num, reg_name)
     pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?utf8=%E2%9C%93&search%5Brecord.law_number%5D='
     reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
-    post_link = '&commit=%D0%97%D0%B0%D0%BF%D1%80%D0%BE%D1%81%D0%B8%D1%82%D1%8C'
+    post_link = '&search%5Bfilter%5D=&commit=Запросить'
     link = f'{pre_lnk}{reg_n}{post_link}'
     print(link)
     browser.get(link)
