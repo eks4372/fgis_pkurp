@@ -84,9 +84,10 @@ for number in numbers:
             err = err + 1
             continue
     ban = browser.find_element(By.ID, 'restrict').text
-    pattern = r'(\d)'
+    pattern = r'(\d*\))'
     n = re.search(pattern, ban)
-    many_next = ((int(n[0]) - 1) // 10) + 1  # сколько раз нажимать Далее
+    # print(n)
+    many_next = ((int(n[0][:-1]) - 1) // 10) + 1  # сколько раз нажимать Далее
     nums_ban = []
     while many_next > 0:
         tab = browser.find_element(By.CSS_SELECTOR, "#filtered_containers_table > div > div:nth-child(8) > div")
@@ -96,7 +97,7 @@ for number in numbers:
         t = tab.find_elements(By.CSS_SELECTOR, ".scroll-y .table tbody tr")
         for i in t:
             if 'Запрещение регистрации' in i.text or 'ограничения' in i.text:
-                nums_ban.append(i.find_element(By.CSS_SELECTOR, ':nth-child(4)').text)
+                nums_ban.append(i.find_element(By.CSS_SELECTOR, ':nth-child(5)').text)
         if many_next > 1:
             browser.find_element(By.CSS_SELECTOR, '.scroll-y  .next>.next').click()  # клик далее
             print('клик далее')
@@ -130,11 +131,11 @@ for number in numbers:
             ############
             # Удаляем
             if 'Погашение' in i.text:
-                k = i.find_element(By.CSS_SELECTOR, 'td:nth-child(3)')
-                u = i.find_element(By.CSS_SELECTOR, 'td:nth-child(4)')
+                k = i.find_element(By.CSS_SELECTOR, 'td:nth-child(4)')
+                u = i.find_element(By.CSS_SELECTOR, 'td:nth-child(5)')
                 kad_numbers.append(k.text)
                 print(f'найдено погашение кадастрового номера {k.text} {u.text}')
-                continue
+                # continue
             # print('##')
             # print(i.text)
             i.find_element(By.LINK_TEXT, 'Удалить').click()
@@ -197,8 +198,8 @@ for number in numbers:
             )
         except:
             print("таблица Сведения не загрузилась !!")
-        list_zayadleniy = browser.find_elements(By.CSS_SELECTOR, ".js-table-filter-group-scope > tbody tr")
-        for z in list_zayadleniy:
+        list_zayavleniy = browser.find_elements(By.CSS_SELECTOR, ".js-table-filter-group-scope > tbody tr")
+        for z in list_zayavleniy:
             link = z.find_element(By.CLASS_NAME, 'samepage-link')
             kad_number = link.text
             if kad_number in kad_numbers:
@@ -233,15 +234,15 @@ for number in numbers:
                             print('загрузка')
                             sleep(1)
                         break
-                else:
-                    print(f'[WARNING !] для кадастрового номера {kad_number} номер регистрации запрещения не найден')
-                    browser.find_element(By.CSS_SELECTOR, '.is-scroll-x .close').click()
-                    myfunctions.comment(browser, number, f'для кадастрового номера {kad_number}'
-                                                         f' номер регистрации запрещения не найден')
-                    wri_comm()
-                    comm = comm + 1
-                    browser.get(sved_page)
-                    break
+                    else:
+                        print(f'[WARNING !] для кадастрового номера {kad_number} номер регистрации запрещения не найден')
+                        browser.find_element(By.CSS_SELECTOR, '.is-scroll-x .close').click()
+                        myfunctions.comment(browser, number, f'для кадастрового номера {kad_number}'
+                                                             f' номер регистрации запрещения не найден')
+                        wri_comm()
+                        comm = comm + 1
+                        browser.get(sved_page)
+                        break
                 if 'Актуальные записи не найдены' in div.text:
                     print(f'[WARNING !] номер регистрации {r} не найден')
                     browser.find_element(By.CSS_SELECTOR, '.is-scroll-x .close').click()
