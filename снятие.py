@@ -191,6 +191,8 @@ for number in numbers:
 
 
     def for_each_kad_number():
+        if check_manu_objects('Показать все'):
+            browser.find_element(By.LINK_TEXT, 'Показать все').click()
         global err, comm
         try:
             element = WebDriverWait(browser, 150).until(
@@ -234,15 +236,15 @@ for number in numbers:
                             print('загрузка')
                             sleep(1)
                         break
-                    else:
-                        print(f'[WARNING !] для кадастрового номера {kad_number} номер регистрации запрещения не найден')
-                        browser.find_element(By.CSS_SELECTOR, '.is-scroll-x .close').click()
-                        myfunctions.comment(browser, number, f'для кадастрового номера {kad_number}'
-                                                             f' номер регистрации запрещения не найден')
-                        wri_comm()
-                        comm = comm + 1
-                        browser.get(sved_page)
-                        break
+                else:
+                    print(f'[WARNING !] для кадастрового номера {kad_number} номер регистрации запрещения не найден')
+                    browser.find_element(By.CSS_SELECTOR, '.is-scroll-x .close').click()
+                    myfunctions.comment(browser, number, f'для кадастрового номера {kad_number}'
+                                                         f' номер регистрации запрещения не найден')
+                    wri_comm()
+                    comm = comm + 1
+                    browser.get(sved_page)
+                    break
                 if 'Актуальные записи не найдены' in div.text:
                     print(f'[WARNING !] номер регистрации {r} не найден')
                     browser.find_element(By.CSS_SELECTOR, '.is-scroll-x .close').click()
@@ -263,7 +265,7 @@ for number in numbers:
                             print(f'[ERROR] рег. запись не найдена !!!')
                             writ_err(dir_err, err_text=f'в обращении {number} не найден номер записи {r}')
                             err = err + 1
-                            return 'error'
+                            break  # return 'error'
                     t_body = browser.find_element(By.CSS_SELECTOR, "*[class^='panel-group item']")
                     if 'Погашенная' in t_body.find_element(By.TAG_NAME, 'tr').text:
                         print(f'[INFO] найдена погашенная запись {r}')
@@ -401,8 +403,8 @@ for number in numbers:
         if n == 'error':
             break
         len_num_kad -= 1
-    if n == 'error':
-        continue
+    # if n == 'error':
+    #     continue
 
         # Запускаем проверки
     # sleep(1)
