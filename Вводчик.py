@@ -188,7 +188,7 @@ for number in numbers:
                         sleep(1)
                         arch_kad_number.remove(arch_kad_num)
                         if arch_kad_number:
-                            remove_arch(arch_kad_number, browser, many_next - 1)
+                            remove_arch(arch_kad_number, browser, many_next - 1)  #
             if many_next > 1:
                 browser.find_element(By.CSS_SELECTOR, '.scroll-y  .next>.next').click()  # клик далее
                 print('клик далее')
