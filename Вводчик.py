@@ -154,7 +154,9 @@ for number in numbers:
     arch_kad_number_ = list(arch_kad_number)
 
 
-    # проверяем и собираем ссылки для внесения сведений
+# проверяем и собираем ссылки для внесения сведений
+
+
     def remove_arch(arch_kad_number, browser, many_next):
         try:
             element = WebDriverWait(browser, 10).until(
@@ -188,7 +190,7 @@ for number in numbers:
                         sleep(1)
                         arch_kad_number.remove(arch_kad_num)
                         if arch_kad_number:
-                            remove_arch(arch_kad_number, browser, many_next - 1)  #
+                            remove_arch(arch_kad_number, browser, many_next - 1)
             if many_next > 1:
                 browser.find_element(By.CSS_SELECTOR, '.scroll-y  .next>.next').click()  # клик далее
                 print('клик далее')
@@ -429,7 +431,7 @@ for number in numbers:
                         find = 0
                         for t_b in t_body:
                             if kad_num.text in t_b.text and num_data[number]['ФИО'].lower().replace('ё', 'е').replace(
-                                    ' ', '').replace('"', '') in t_b.text.lower().replace('ё', 'е')\
+                                    ' ', '').replace('"', '') in t_b.text.lower().replace('ё', 'е') \
                                     .replace(' ', '').replace('"', ''):
                                 for reg_n in reg_num_list:
                                     if reg_n in t_b.text:
@@ -554,6 +556,7 @@ for number in numbers:
             elif 'Срок действия' in scope.text:
                 btn = True
 
+
                 # проверяем наличие кнопки установления срока в неустановлен
                 def it_is(btn):
                     try:
@@ -632,7 +635,7 @@ for number in numbers:
                 b.click()
         #############################
         if check_exist("bs-tabs-react-restrict_parties"):
-            btns = browser.find_element(By.ID, "bs-tabs-react-restrict_parties")\
+            btns = browser.find_element(By.ID, "bs-tabs-react-restrict_parties") \
                 .find_elements(By.CSS_SELECTOR, "*[class^='btn btn-default react-add']")
             for btn in btns:
                 if 'Сведения о лицах, в пользу которых установлены ограничения права и обременения ОН' in btn.text:
@@ -649,7 +652,7 @@ for number in numbers:
                 print("ставим тип лица")
 
                 f_g.find_element(By.CSS_SELECTOR, "*[class^='select2-selection select2-selection--single']").click()
-                options = browser.find_element(By.CLASS_NAME, 'select2-results__options')\
+                options = browser.find_element(By.CLASS_NAME, 'select2-results__options') \
                     .find_elements(By.CLASS_NAME, 'select2-results__option')
                 for option in options:
                     if option.text == 'Не определено':
@@ -658,7 +661,7 @@ for number in numbers:
 
             elif '*Тип лица, права которого ограничиваются и обременяются объекты недвижимости' in f_g.text:
                 f_g.find_element(By.CSS_SELECTOR, "*[class^='select2-selection select2-selection--single']").click()
-                options = browser.find_element(By.CLASS_NAME, 'select2-results__options')\
+                options = browser.find_element(By.CLASS_NAME, 'select2-results__options') \
                     .find_elements(By.CLASS_NAME, 'select2-results__option')
                 for option in options:
                     if option.text == 'Правообладатель':
@@ -1052,8 +1055,9 @@ for number in numbers:
 
         f_check.click()
 
-        f_checks = browser\
-            .find_elements(By.CSS_SELECTOR, "*[class^='Check js-comment-check js-table-group js-status-done js-result-fail successCheck']")
+        f_checks = browser \
+            .find_elements(By.CSS_SELECTOR,
+                           "*[class^='Check js-comment-check js-table-group js-status-done js-result-fail successCheck']")
         return f_checks
 
 
