@@ -149,7 +149,7 @@ for number in numbers:
     for status in t:
         if 'Архив' in status.text:
             # print('text =', status.text)
-            print('kad number = ', status.find_element(By.CLASS_NAME, 'samepage-link').text)
+            print('архивный кадастровый номер = ', status.find_element(By.CLASS_NAME, 'samepage-link').text)
             arch_kad_number.append(status.find_element(By.CLASS_NAME, 'samepage-link').text)
     arch_kad_number_ = list(arch_kad_number)
 
@@ -200,6 +200,9 @@ for number in numbers:
     many_next = ((len(refr_links) - 1) // 10) + 1  # сколько раз нажимать Далее
     if arch_kad_number:
         remove_arch(arch_kad_number, browser, many_next)
+        if many_next > 0:
+            # .scroll-y  .pagination  li:nth-child(2)> .pagination-link
+            browser.find_element(By.CSS_SELECTOR, '.scroll-y  .pagination-link').click()  # на 1 страницу
 
     # собираем оставшиеся ссылки
     try:
@@ -787,18 +790,19 @@ for number in numbers:
             res_ = ''
             t_body = take_tbody(browser)
             for s in t_body[::-1]:
-                if serch in s.text.lower().replace('ё', 'е').replace(' ', '').replace('"', ''):
-                    res = s
-                if type == "Физическое лицо":
-                    if serch in s.text.lower().replace('ё', 'е') \
-                            .replace(' ', '').replace('"', '') and myfunctions.serch_snils(s.text):
-                        res_ = s
-                        return res_, True
-                if type == "Юридическое лицо":
-                    if serch in s.text.lower().replace('ё', 'е') \
-                            .replace(' ', '').replace('"', '') and myfunctions.serch_ogrn(s.text):
-                        res_ = s
-                        return res_, True
+                if s:
+                    if serch in s.text.lower().replace('ё', 'е').replace(' ', '').replace('"', ''):
+                        res = s
+                    if type == "Физическое лицо":
+                        if serch in s.text.lower().replace('ё', 'е') \
+                                .replace(' ', '').replace('"', '') and myfunctions.serch_snils(s.text):
+                            res_ = s
+                            return res_, True
+                    if type == "Юридическое лицо":
+                        if serch in s.text.lower().replace('ё', 'е') \
+                                .replace(' ', '').replace('"', '') and myfunctions.serch_ogrn(s.text):
+                            res_ = s
+                            return res_, True
             if res:
                 return res, False
             else:
