@@ -30,6 +30,10 @@ work_file.close()
 
 options = webdriver.ChromeOptions()
 options.add_argument("start-maximized")
+try:
+    options.add_extension('extension_1_2_8_0.crx')
+except:
+    print('не установлены расширения браузера')
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option('useAutomationExtension', False)
 
