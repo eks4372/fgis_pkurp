@@ -11,6 +11,7 @@ cryptocode==0.1
 cryptography==40.0.2
 cssselect==1.2.0
 Eel==0.16.0
+et-xmlfile==1.1.0
 exceptiongroup==1.1.1
 filelock==3.10.7
 future==0.18.3
@@ -20,8 +21,11 @@ greenlet==2.0.2
 h11==0.14.0
 idna==3.4
 lxml==4.9.2
+numpy==1.24.4
+openpyxl==3.1.2
 outcome==1.2.0
 packaging==23.0
+pandas==2.0.3
 parsel==1.7.0
 peewee==3.16.0
 pefile==2023.2.7
@@ -33,6 +37,8 @@ pyOpenSSL==23.1.1
 pyparsing==3.0.9
 pyperclip==1.8.2
 PySocks==1.7.1
+python-dateutil==2.8.2
+pytz==2023.3
 pywin32==306
 pywin32-ctypes==0.2.0
 requestium==0.2.0
@@ -45,6 +51,7 @@ sortedcontainers==2.4.0
 tldextract==3.4.0
 trio==0.22.0
 trio-websocket==0.10.2
+tzdata==2023.3
 urllib3==1.26.15
 urllib3-secure-extra==0.1.0
 w3lib==2.1.1

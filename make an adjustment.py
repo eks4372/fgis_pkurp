@@ -154,7 +154,6 @@ try:
                         browser.switch_to.window(browser.window_handles[0])
                         break
         df.at[index, 'номер обращения корректировки'] = number
-        print(df)
         obr = obr + 1
         print(f'[INFO] отработано {obr} ({round(obr / len(df) * 100, 2)} %) обращений из {len(df)},'
               f' осталось {len(df) - obr}')

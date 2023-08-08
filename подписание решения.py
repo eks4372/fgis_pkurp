@@ -2,7 +2,7 @@ from bot_pkurp_start import *
 import pandas as pd
 
 dir_ = myfunctions.make_dir('корректировка СНИЛС')
-file = f'{dir_}\\на подпись.xlsx'
+file = settings['file']['sig_file']
 file_out = f'{dir_}\\{now}_подписанные.xlsx'
 url = 'http://pkurp-app-balancer-01.prod.egrn/requests?filter=mine'
 logon(url)

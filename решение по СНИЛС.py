@@ -330,7 +330,7 @@ try:
         alert_obj.accept()
 
         while 'service_task' not in browser.current_url:
-            print('ждемс')
+            print('ждем завершения')
             sleep(0.3)
         df.at[index, 'выполнено'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
         obr = obr + 1
