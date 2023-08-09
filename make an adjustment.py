@@ -25,6 +25,9 @@ try:
         link = f'{pre_lnk}{reg_n}{post_link}'
         print(link)
         browser.get(link)
+        if "Возникла ошибка на сервере" in browser.page_source:
+            print('ошибка сервера, пробую обновить страницу')
+            browser.refresh()
         try:
             element = WebDriverWait(browser, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "*[class^='panel-group item']")))
@@ -129,7 +132,8 @@ try:
                                              "#tech-error-react input[name='edited_attrs[0][new]'][type='string']") \
                             .send_keys(snils)
                         browser.find_element(By.CLASS_NAME, 'fa-plus').click()
-                        browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(m_i)
+                        browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(
+                            f'ид запроса в СМЭВ: {m_i}')
                         browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
                         while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
                             wait = WebDriverWait(browser, 30)
@@ -153,7 +157,11 @@ try:
                         browser.close()
                         browser.switch_to.window(browser.window_handles[0])
                         break
-        df.at[index, 'номер обращения корректировки'] = number
+        if not df['номер обращения корректировки'].isin([number]).any():
+            df.at[index, 'номер обращения корректировки'] = number
+        else:
+            print(f'значение {number} уже существует')
+            sys.exit()
         obr = obr + 1
         print(f'[INFO] отработано {obr} ({round(obr / len(df) * 100, 2)} %) обращений из {len(df)},'
               f' осталось {len(df) - obr}')
