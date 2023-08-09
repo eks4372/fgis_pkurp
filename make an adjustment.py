@@ -37,6 +37,7 @@ try:
         reg = t_body.find_elements(By.TAG_NAME, 'tr')
         m = 0
         find = False
+        actual = False
         for index_, reg_f in enumerate(reg):
             if (index_ + 1) % 2 != 0:
                 print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
@@ -78,19 +79,23 @@ try:
                                 n = group.find_element(By.CLASS_NAME, 'form-control').text
                             elif 'Отчество' in group.text:
                                 p = group.find_element(By.CLASS_NAME, 'form-control').text
-                                break
-                        f_n_p = f'{f} {n} {p}'
-                        print(f_n_p)
-                        if f_n_p == fio:
-                            if gender == 'Male':
-                                x = ''
-                            else:
-                                x = 'а'
-                            print(f'{fio} найден{x}')
-                            find = True
-                            break
+                                # break
+                                f_n_p = f'{f} {n} {p}'
+                                print(f_n_p)
+                                if f_n_p == fio:
+                                    if gender == 'Male':
+                                        x = ''
+                                    else:
+                                        x = 'а'
+                                    print(f'{fio} найден{x}')
+                                    find = True
+                                    actual = True
+                                    break
+                                else:
+                                    print(f'{f_n_p} не равно {fio}')
                         else:
-                            print(f'{f_n_p} не равно {fio}')
+                            print(f'{fio} не найден в {reg_num}')
+                            sys.exit()
             else:
                 if find:
                     if reg_f.find_element(By.CLASS_NAME, 'pull-right'):
@@ -157,11 +162,25 @@ try:
                         browser.close()
                         browser.switch_to.window(browser.window_handles[0])
                         break
-        if not df['номер обращения корректировки'].isin([number]).any():
-            df.at[index, 'номер обращения корректировки'] = number
+        if not actual:
+            print(f'по рег номеру {reg_num} нет актуальных записей')
+            dir_err = myfunctions.make_dir('ошибки')
+            err_file = f'{dir_err}/err_numbers.txt'
+            if os.path.isfile(err_file):
+                flag = 'a'
+            else:
+                flag = 'w'
+            with open(err_file, flag) as f:
+                f.write(f'по рег номеру {reg_num} нет актуальных записей' + '\n')
+            df.at[index, 'номер обращения корректировки'] = 'обращение не создано'
+            obr = obr + 1
+            continue
         else:
-            print(f'значение {number} уже существует')
-            sys.exit()
+            if not df['номер обращения корректировки'].isin([number]).any():
+                df.at[index, 'номер обращения корректировки'] = number
+            else:
+                print(f'значение {number} уже существует')
+                sys.exit()
         obr = obr + 1
         print(f'[INFO] отработано {obr} ({round(obr / len(df) * 100, 2)} %) обращений из {len(df)},'
               f' осталось {len(df) - obr}')
