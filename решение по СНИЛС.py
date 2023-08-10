@@ -306,7 +306,7 @@ try:
 
         sleep(0.5) #  может увеличить время ?
         button.click()
-        sleep(0.1)
+        sleep(0.5)
         try:
             button.click()
         except:
