@@ -3,7 +3,7 @@ import pandas as pd
 y = ['y', 'yes', 'д', 'да', 'ага']
 
 
-def split_xlsx(file_path, num_rows, head=False):
+def split_xlsx(file_path, num_rows, head=False, a=0):
     # Читаем исходный файл
     df = pd.read_excel(file_path)
 
@@ -30,7 +30,7 @@ def split_xlsx(file_path, num_rows, head=False):
 
         # Если head=True, добавляем заголовки таблицы в каждый файл
         if head:
-            new_df = pd.concat([df.head(1), new_df])
+            new_df = pd.concat([df.head(a), new_df])
 
         # Создаем новый файл с названием "файл_номер.xlsx"
         new_file_name = f"{file_name}_{file_num}.xlsx"
@@ -43,9 +43,22 @@ if __name__ == '__main__':
     if '.xlsx' not in f:
         f = f'{f}.xlsx'
     n = int(input('на сколько строк разделить файл: '))
-    h = input('содержит ли файл заголовок таблицы? (enter - нет по умолчанию) ')
+    h = input('содержит ли файл шапку таблицы? (enter - нет по умолчанию): ')
     if h.lower() in y:
         h = True
     else:
         h = False
-    split_xlsx(f, n, h)
+    if h:
+
+        x = input('сколько строк содержит шапка таблицы (1 по умолчанию): ')
+        if x:
+            i = int(x)
+        else:
+            i = 0
+        if i <= 1:
+            i = 0
+        else:
+            i -= 1
+    else:
+        i = 0
+    split_xlsx(f, n, h, i)

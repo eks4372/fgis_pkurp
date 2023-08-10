@@ -13,6 +13,7 @@ df = pd.read_excel(file)
 pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?utf8=%E2%9C%93&search%5Brecord.law_number%5D='
 post_link = '&search%5Bfilter%5D=&commit=Запросить'
 obr = 0
+df['номер обращения корректировки'] = ''
 try:
     for index, row in df.iterrows():
         print(f'{index + 1} из {len(df)}')
