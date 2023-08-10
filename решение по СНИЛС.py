@@ -306,6 +306,11 @@ try:
 
         sleep(0.5) #  может увеличить время ?
         button.click()
+        sleep(0.1)
+        try:
+            button.click()
+        except:
+            print('#')
         print('далее')
         sleep(0.5)
 
