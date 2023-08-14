@@ -1,9 +1,9 @@
 from bot_pkurp_start import *
 import pandas as pd
 
-dir_ = myfunctions.make_dir('корректировка СНИЛС')
+# dir_ = myfunctions.make_dir('корректировка СНИЛС')
 file = settings['file']['sig_file']
-file_out = f'{dir_}\\{now}_подписанные.xlsx'
+file_out = f'{now}_подписанные.xlsx'
 url = 'http://pkurp-app-balancer-01.prod.egrn/requests?filter=mine'
 logon(url)
 
@@ -60,7 +60,7 @@ try:
             f.write(number + '\n')
         sleep(1)
 except:
-    df.to_excel(f'{now}часть номеров подписания.xlsx', index=False)
+    df.to_excel(f'{now}часть номеров подписаные.xlsx', index=False)
     print('аварийное завершение !')
     sys.exit()
 df.to_excel(file_out, index=False)

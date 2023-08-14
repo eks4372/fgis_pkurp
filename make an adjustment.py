@@ -3,8 +3,8 @@ import pandas as pd
 import re
 
 file = settings['file']['start_file']
-dir_ = myfunctions.make_dir('корректировка создана')
-file_out = f'{dir_}\\{now}_обращения.xlsx'
+# dir_ = myfunctions.make_dir('корректировка создана')
+file_out = f'{now}_обращения корректировки.xlsx'
 url = 'http://pkurp-app-balancer-01.prod.egrn/requests?filter=mine'
 logon(url)
 
@@ -109,6 +109,9 @@ try:
                             )
                         except:
                             print('не загрузилась запись об изменении')
+                            if "Возникла ошибка на сервере" in browser.page_source:
+                                print('ошибка сервера, пробую обновить страницу')
+                                browser.refresh()
                         browser.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
                         forms = browser.find_elements(By.CSS_SELECTOR,
                                                       '#bs-tabs-react-right_holders .scope .form-group')
@@ -139,7 +142,7 @@ try:
                             .send_keys(snils)
                         browser.find_element(By.CLASS_NAME, 'fa-plus').click()
                         browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(
-                            f'ид запроса в СМЭВ: {m_i}')
+                            f'ид запроса в СМЭВ {fio}: {m_i}')
                         browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
                         while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
                             wait = WebDriverWait(browser, 30)

@@ -3,8 +3,8 @@ import pandas as pd
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 
 file = settings['file']['snils_file']
-dir_ = myfunctions.make_dir('корректировка СНИЛС')
-file_out = f'{dir_}\\{now}_готовые.xlsx'
+# dir_ = myfunctions.make_dir('корректировка СНИЛС')
+file_out = f'{now}_результат решений.xlsx'
 url = 'http://pkurp-app-balancer-01.prod.egrn/requests?filter=mine'
 logon(url)
 
@@ -304,11 +304,11 @@ try:
             except:
                 print('ожидание активности кнопки далее')
 
-        sleep(0.5) #  может увеличить время ?
+        sleep(0.5)
         button.click()
         sleep(0.5)
         try:
-            button.click()
+            browser.find_element(By.LINK_TEXT, 'Далее').click()
         except:
             print('#')
         print('далее')
@@ -320,7 +320,11 @@ try:
                 print('кнопка далее неактивна')
                 break
             except:
-                print('ожидание неактивности кнопки далее')
+                print('ожидание неактивности кнопки далее...')
+                try:
+                    browser.find_element(By.LINK_TEXT, 'Далее').click()
+                except:
+                    print('###')
         sleep(1)
 
         try:

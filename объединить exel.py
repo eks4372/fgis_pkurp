@@ -32,7 +32,7 @@ def combine_files(directory, file_mask='_подписанные'):
 
 if __name__ == '__main__':
     d = input(f'укадите папку, по умолчанию {os.getcwd()} :')
-    files = input('укажите маку файлов, по умолчанию _подписанные.xlsx: ')
+    files = input('укажите маку файлов, по умолчанию завершенные.xlsx: ')
     combine_files(d,files)
     # combine_files("путь_к_директории", "_подписанные.xlsx")
     # combine_files("D:\PycharmProjects\ФГИС_пром", "часть номеров корректировки.xlsx")
