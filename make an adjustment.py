@@ -19,6 +19,9 @@ try:
         print(f'{index + 1} из {len(df)}')
         reg_num = row['Рег. № пр./огран.']
         fio = row.ФИО
+        if '  ' in fio:
+            fio = fio.replace('  ', ' ')
+            df.at[index, 'ФИО'] = fio
         snils = row.СНИЛС
         gender = row.пол
         m_i = row.message_id
@@ -82,6 +85,7 @@ try:
                                 p = group.find_element(By.CLASS_NAME, 'form-control').text
                                 # break
                                 f_n_p = f'{f} {n} {p}'
+                                f_n_p =f_n_p.strip()
                                 print(f_n_p)
                                 if f_n_p == fio:
                                     if gender == 'Male':
@@ -127,6 +131,7 @@ try:
                             elif 'Отчество' in form.text:
                                 p = form.find_element(By.CLASS_NAME, 'form-control').text
                                 f_n_p = f'{f} {n} {p}'
+                                f_n_p = f_n_p.strip()
                                 print(f_n_p)
                             if f_n_p == fio:
                                 if 'СНИЛС' in form.text:

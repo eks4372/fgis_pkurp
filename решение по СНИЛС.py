@@ -82,6 +82,7 @@ try:
             elif 'Отчество' in group.text:
                 p = group.find_element(By.CLASS_NAME, 'form-control').text
                 f_n_p = f'{f} {n} {p}'
+                f_n_p = f_n_p.strip()
                 print(f_n_p)
                 if f_n_p == fio:
                     if gender == 'Male':

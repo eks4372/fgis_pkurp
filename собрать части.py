@@ -61,6 +61,7 @@ if __name__ == '__main__':
     else:
         field = input('укажите поле для валидации: ')
     merge_files(d, files, field)
+    input('Всё завершено удачно, нажмите ENTER для выхода')  # чтоб не закрывалась консоль)
     # Пример использования
     # merge_files('/path/to/directory', '_часть.xlsx', 'название поля')
     # merge_files('D:\PycharmProjects\ФГИС_пром', 'часть номеров корректировки.xlsx', 'номер обращения корректировки')
