@@ -59,7 +59,12 @@ try:
                 tr.find_element(By.LINK_TEXT, 'Изменение сведений').click()
                 sleep(1)
                 break
-
+        try:
+            element = WebDriverWait(browser, 300).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']"))
+            )
+        except:
+            print("не вижу меню")
         l_menu = browser.find_elements(By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']")
         for l_menu in l_menu:
             l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
@@ -334,6 +339,14 @@ try:
             )
         except:
             print('не могу выбрать решение')
+            try:
+                browser.find_element(By.LINK_TEXT, 'Назад').click()
+                print('пробую вернуть ся назад')
+                sleep(3)
+                browser.find_element(By.LINK_TEXT, 'Далее').click()
+                print('и снова далее')
+            except:
+                print('всеравно не могу выбрать решение')
         browser.find_element(By.ID, 'registrar_decision_result_approve').click()
         print('внести сведения в ЕГРН')
         sleep(0.3)
