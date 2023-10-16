@@ -18,13 +18,14 @@ try:
     for index, row in df.iterrows():
         print(f'{index + 1} из {len(df)}')
         reg_num = row['Рег. № пр./огран.']
-        fio = row.ФИО
-        if '  ' in fio:
-            fio = fio.replace('  ', ' ')
-            df.at[index, 'ФИО'] = fio
-        snils = row.СНИЛС
-        gender = row.пол
-        m_i = row.message_id
+        name_u = row.Наименование
+        if '  ' in name_u:
+            name_u = name_u.replace('  ', ' ')
+            df.at[index, 'Наименование'] = name_u
+        inn = row.ИНН
+        ogrn = row.ОГРН
+        gender = 'male'
+        # m_i = row.message_id
         reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
         link = f'{pre_lnk}{reg_n}{post_link}'
         print(link)
@@ -46,9 +47,9 @@ try:
         for index_, reg_f in enumerate(reg):
             if (index_ + 1) % 2 != 0:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
-                if 'Актуальная' not in reg_f.text:
-                    continue
-                elif 'Актуальная' in reg_f.text:
+                # if 'Актуальная' not in reg_f.text:
+                #     continue
+                if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
                     reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                     sleep(1)
                     try:
@@ -61,10 +62,16 @@ try:
         for index_, reg_f in enumerate(reg):
             if (index_ + 1) % 2 != 0:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
-                if 'Актуальная' not in reg_f.text:
-                    continue
-                elif 'Актуальная' in reg_f.text:
-                    print(f"Номер права {reg_num} {reg_f.find_element(By.CLASS_NAME, 'text-success').text}")
+                # if 'Актуальная' not in reg_f.text or 'Погашенная' not in reg_f.text or 'Архивная' not in reg_f.text:
+                #     continue
+
+                if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
+                    try:
+                        print(f"Номер права {reg_num} {reg_f.find_element(By.CLASS_NAME, 'text-success').text}")
+                    except:
+                        print(f"Номер права {reg_num} неактуальный")
+                    find = True
+                    actual = True
                     # reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                     try:
                         element = WebDriverWait(browser, 10).until(
@@ -80,7 +87,7 @@ try:
 
                         for l_menu in l_menus:
                             # print(len(l_menus))
-                            l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+                            l_menu.find_element(By.LINK_TEXT, 'Сведения о лицах').click()
                             sleep(1)
                             m = m + 1
                             print(f'вошли в запись запись m= {m}')
@@ -91,34 +98,34 @@ try:
                             except:
                                 print("не вижу страницы сведений !!")
                             f_groups = browser.find_elements(By.CLASS_NAME, 'form-group')
-                            for group in f_groups:
-                                if group.text == '':
-                                    continue
-                                elif 'Фамилия' in group.text:
-                                    f = group.find_element(By.CLASS_NAME, 'form-control').text
-                                elif 'Имя' in group.text:
-                                    n = group.find_element(By.CLASS_NAME, 'form-control').text
-                                elif 'Отчество' in group.text:
-                                    p = group.find_element(By.CLASS_NAME, 'form-control').text
-                                    # break
-                                    f_n_p = f'{f} {n} {p}'
-                                    f_n_p =f_n_p.strip()
-                                    print(f_n_p)
-                                    if f_n_p == fio:
-                                        if gender == 'Male':
-                                            x = ''
-                                        else:
-                                            x = 'а'
-                                        print(f'{fio} найден{x}')
-                                        find = True
-                                        actual = True
-                                        break
-                                    else:
-                                        print(f'{f_n_p} не равно {fio}')
-                            else:
-                                if m == int(len(reg) / 2):
-                                    print(f'{fio} не найден в {reg_num}')
-                                    sys.exit()
+                            # for group in f_groups:
+                            #     if group.text == '':
+                            #         continue
+                            #     elif 'Наименование' in group.text:
+                            #         f = group.find_element(By.CLASS_NAME, 'form-control').text
+                            #     elif 'ИНН' in group.text:
+                            #         n = group.find_element(By.CLASS_NAME, 'form-control').text
+                            #     elif 'ОГРН' in group.text:
+                            #         p = group.find_element(By.CLASS_NAME, 'form-control').text
+                            #         # break
+                            #         f_n_p = f'{f} {n} {p}'
+                            #         f_n_p =f_n_p.strip()
+                            #         print(f_n_p)
+                            #         if f_n_p == name_u:
+                            #             if gender == 'Male':
+                            #                 x = ''
+                            #             else:
+                            #                 x = 'а'
+                            #             print(f'{name_u} найден{x}')
+                            #             find = True
+                            #             actual = True
+                            #             break
+                            #         else:
+                            #             print(f'{f_n_p} не равно {name_u}')
+                            # else:
+                            #     if m == int(len(reg) / 2):
+                            #         print(f'{name_u} не найден в {reg_num}')
+                            #         sys.exit()
             else:
                 if find:
                     if reg_f.find_element(By.CLASS_NAME, 'pull-right'):
@@ -137,27 +144,32 @@ try:
                             if "Возникла ошибка на сервере" in browser.page_source:
                                 print('ошибка сервера, пробую обновить страницу')
                                 browser.refresh()
-                        browser.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+                        browser.find_element(By.LINK_TEXT, 'Сведения о лицах').click()
                         forms = browser.find_elements(By.CSS_SELECTOR,
-                                                      '#bs-tabs-react-right_holders .scope .form-group')
-                        f_n_p = ''
+                                                      '.scope .fieldset .scope .fieldset.fieldset .scope .fieldset .form-group')
+                        # f_n_p = ''
                         for form in forms:
+
                             # print(form.text)
-                            if form.text == '':
-                                continue
-                            elif 'Фамилия' in form.text:
-                                f = form.find_element(By.CLASS_NAME, 'form-control').text
-                            elif 'Имя' in form.text:
-                                n = form.find_element(By.CLASS_NAME, 'form-control').text
-                            elif 'Отчество' in form.text:
-                                p = form.find_element(By.CLASS_NAME, 'form-control').text
-                                f_n_p = f'{f} {n} {p}'
-                                f_n_p = f_n_p.strip()
-                                print(f_n_p)
-                            if f_n_p == fio:
-                                if 'СНИЛС' in form.text:
-                                    form.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
-                                    break
+                            # if form.text == '':
+                            #     continue
+                            # elif 'Фамилия' in form.text:
+                            #     f = form.find_element(By.CLASS_NAME, 'form-control').text
+                            # elif 'Имя' in form.text:
+                            #     n = form.find_element(By.CLASS_NAME, 'form-control').text
+                            # elif 'Отчество' in form.text:
+                            #     p = form.find_element(By.CLASS_NAME, 'form-control').text
+                            #     f_n_p = f'{f} {n} {p}'
+                            #     f_n_p = f_n_p.strip()
+                            #     print(f_n_p)
+                            # if f_n_p == name_u:
+                            if 'Наименование' in form.text:
+                                form.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
+                            elif 'ИНН' in form.text:
+                                form.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
+                            elif 'ОГРН' in form.text:
+                                form.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
+                                break
                         btns = browser.find_elements(By.CLASS_NAME, 'btn-primary')
                         for b in btns:
                             if b.text == 'Далее':
@@ -165,10 +177,16 @@ try:
                                 print('далее')
                         browser.find_element(By.CSS_SELECTOR,
                                              "#tech-error-react input[name='edited_attrs[0][new]'][type='string']") \
-                            .send_keys(snils)
-                        browser.find_element(By.CLASS_NAME, 'fa-plus').click()
-                        browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(
-                            f'ид запроса в СМЭВ {fio}: {m_i}')
+                            .send_keys(name_u)
+                        browser.find_element(By.CSS_SELECTOR,
+                                             "#tech-error-react input[name='edited_attrs[1][new]'][type='string']") \
+                            .send_keys(inn)
+                        browser.find_element(By.CSS_SELECTOR,
+                                             "#tech-error-react input[name='edited_attrs[2][new]'][type='string']") \
+                            .send_keys(ogrn)
+                        # browser.find_element(By.CLASS_NAME, 'fa-plus').click()
+                        # browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(
+                        #     f'ид запроса в СМЭВ {name_u}: {m_i}')
                         browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
                         while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
                             wait = WebDriverWait(browser, 30)

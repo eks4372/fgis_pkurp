@@ -17,9 +17,10 @@ try:
         print(f'{index + 1} из {len(df)}')
         reg_num = row['Рег. № пр./огран.']
         number = row['номер обращения корректировки']
-        fio = row.ФИО
-        snils = row.СНИЛС
-        gender = row.пол
+        name_u = row.Наименование
+        inn = row.ИНН
+        ogrn = row.ОГРН
+        gender = 'male'
         post_link = '/registry_data_containers/statements'
         sved_page = f'{pre_lnk}{number}{post_link}'
         print(sved_page)
@@ -55,7 +56,7 @@ try:
                 print("не вижу прав !!!")
         t = browser.find_elements(By.CSS_SELECTOR, '.scroll-y .table tbody tr')
         for tr in t:
-            if reg_num in tr.text and fio in tr.text:
+            if reg_num in tr.text: #and fio in tr.text:
                 tr.find_element(By.LINK_TEXT, 'Изменение сведений').click()
                 sleep(1)
                 break
@@ -67,7 +68,7 @@ try:
             print("не вижу меню")
         l_menu = browser.find_elements(By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']")
         for l_menu in l_menu:
-            l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+            l_menu.find_element(By.LINK_TEXT, 'Сведения о лицах').click()
             sleep(1)
         try:
             element = WebDriverWait(browser, 10).until(
@@ -80,29 +81,41 @@ try:
         for group in f_groups:
             if group.text == '':
                 continue
-            elif 'Фамилия' in group.text:
-                f = group.find_element(By.CLASS_NAME, 'form-control').text
-            elif 'Имя' in group.text:
-                n = group.find_element(By.CLASS_NAME, 'form-control').text
-            elif 'Отчество' in group.text:
-                p = group.find_element(By.CLASS_NAME, 'form-control').text
-                f_n_p = f'{f} {n} {p}'
-                f_n_p = f_n_p.strip()
-                print(f_n_p)
-                if f_n_p == fio:
-                    if gender == 'Male':
-                        x = ''
-                    else:
-                        x = 'а'
-                    print(f'{fio} найден{x}')
-            if f_n_p == fio:
-                if 'СНИЛС' in group.text:
-                    wait = WebDriverWait(browser, 10)
-                    element = wait.until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'fa-check')))
+            # elif 'Фамилия' in group.text:
+            #     f = group.find_element(By.CLASS_NAME, 'form-control').text
+            # elif 'Имя' in group.text:
+            #     n = group.find_element(By.CLASS_NAME, 'form-control').text
+            # elif 'Отчество' in group.text:
+            #     p = group.find_element(By.CLASS_NAME, 'form-control').text
+            #     f_n_p = f'{f} {n} {p}'
+            #     f_n_p = f_n_p.strip()
+            #     print(f_n_p)
+            #     if f_n_p == fio:
+            #         if gender == 'Male':
+            #             x = ''
+            #         else:
+            #             x = 'а'
+            #         print(f'{fio} найден{x}')
+            # if f_n_p == fio:
+            elif 'Наименование' in group.text:
+                wait = WebDriverWait(browser, 10)
+                element = wait.until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'fa-check')))
 
-                    group.find_element(By.CLASS_NAME, 'fa-check').click()
-                    break
+                group.find_element(By.CLASS_NAME, 'fa-check').click()
+            elif 'ИНН' in group.text:
+                wait = WebDriverWait(browser, 10)
+                element = wait.until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'fa-check')))
+
+                group.find_element(By.CLASS_NAME, 'fa-check').click()
+            elif 'ОГРН' in group.text:
+                wait = WebDriverWait(browser, 10)
+                element = wait.until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'fa-check')))
+
+                group.find_element(By.CLASS_NAME, 'fa-check').click()
+                break
         nav_tab = browser.find_element(By.CLASS_NAME, 'nav-tabs')
         nav_tab.find_element(By.LINK_TEXT, 'Документы-основания').click()
         print('переходим в документы-основания')
@@ -205,7 +218,7 @@ try:
             # проверяем выполнение проверок
             success = int(browser.find_element(By.CLASS_NAME, 'is-result-success').text)
             print(f'число успешных проверок: {success}')
-            if success != 3:  # число успешных проверок
+            if success != 1:  # число успешных проверок
                 sleep(3)
                 start_checks()
 
