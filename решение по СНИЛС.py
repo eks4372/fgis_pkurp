@@ -203,9 +203,11 @@ try:
                 print('не перешел на страницу')
                 browser.refresh()
             # проверяем выполнение проверок
-            success = int(browser.find_element(By.CLASS_NAME, 'is-result-success').text)
-            print(f'число успешных проверок: {success}')
-            if success != 3:  # число успешных проверок
+            # success = int(browser.find_element(By.CLASS_NAME, 'is-result-success').text)
+            # print(f'число успешных проверок: {success}')
+            fail = int(browser.find_element(By.CLASS_NAME, 'is-result-fail').text)
+            print(f'число непройденных проверок: {fail}')
+            if fail > 3:  # число непройденных проверок
                 sleep(3)
                 start_checks()
 
