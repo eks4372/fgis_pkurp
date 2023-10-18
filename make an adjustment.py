@@ -77,7 +77,8 @@ try:
                     t_gropups = browser.find_elements(By.CLASS_NAME, 'tab-group')
                     for t in t_gropups:
                         l_menus = t.find_elements(By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']")
-
+                        if find:
+                            break
                         for l_menu in l_menus:
                             # print(len(l_menus))
                             l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()

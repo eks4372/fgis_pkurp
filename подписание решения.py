@@ -60,7 +60,7 @@ try:
             f.write(number + '\n')
         sleep(1)
 except:
-    df.to_excel(f'{now}часть номеров подписаные.xlsx', index=False)
+    df.to_excel(f'{now}часть номеров подписанные.xlsx', index=False)
     print('аварийное завершение !')
     sys.exit()
 df.to_excel(file_out, index=False)
