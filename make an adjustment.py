@@ -81,7 +81,13 @@ try:
                             break
                         for l_menu in l_menus:
                             # print(len(l_menus))
-                            l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+                            try:
+                                l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+                            except:
+                                l_menu.find_element(By.LINK_TEXT, 'Сведения о лицах')
+                                print('вместо "Сведения о правообладателе" найдено "Сведения о лицах"')
+                                m = m + 1
+                                continue
                             sleep(1)
                             m = m + 1
                             print(f'вошли в запись запись m= {m}')
