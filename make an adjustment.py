@@ -21,7 +21,7 @@ try:
     for index, row in df.iterrows():
         print(f'{index + 1} из {len(df)}')
         reg_num = row['Рег. № пр./огран.']
-        kad_number = row['Кад. №']
+        kad_number = row['Кадастровый №']
         fio = row.ФИО
         if '  ' in fio:
             fio = fio.replace('  ', ' ')
