@@ -1,6 +1,7 @@
 from bot_pkurp_start import *
 import pandas as pd
 import re
+from urllib.parse import unquote
 
 file = settings['file']['start_file']
 # dir_ = myfunctions.make_dir('корректировка создана')
@@ -10,14 +11,17 @@ logon(url)
 
 print(f'чтение файла "{file}"')
 df = pd.read_excel(file)
-pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?utf8=%E2%9C%93&search%5Brecord.law_number%5D='
-post_link = '&search%5Bfilter%5D=&commit=Запросить'
+# pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?utf8=%E2%9C%93&search%5Brecord.law_number%5D='
+pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?search[record.property_number]='
+# post_link = '&search%5Bfilter%5D=&commit=Запросить'
+post_link = '&commit=Запросить'
 obr = 0
 df['номер обращения корректировки'] = ''
 try:
     for index, row in df.iterrows():
         print(f'{index + 1} из {len(df)}')
         reg_num = row['Рег. № пр./огран.']
+        kad_number = row['Кад. №']
         fio = row.ФИО
         if '  ' in fio:
             fio = fio.replace('  ', ' ')
@@ -25,10 +29,13 @@ try:
         snils = row.СНИЛС
         gender = row.пол
         m_i = row.message_id
-        reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
-        link = f'{pre_lnk}{reg_n}{post_link}'
+        # reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
+        # kad_number = kad_number.replace(':', '%3A')
+        # link = f'{pre_lnk}{reg_n}{post_link}'
+        link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}' \
+               f'&search[individual.name]={fio.split()[1]}&search[individual.patronymic]={fio.split()[2]}{post_link}'
         print(link)
-        browser.get(link)
+        browser.get(unquote(link))
         if "Возникла ошибка на сервере" in browser.page_source:
             print('ошибка сервера, пробую обновить страницу')
             browser.refresh()
