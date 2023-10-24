@@ -32,8 +32,9 @@ try:
         # reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
         # kad_number = kad_number.replace(':', '%3A')
         # link = f'{pre_lnk}{reg_n}{post_link}'
-        link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}' \
-               f'&search[individual.name]={fio.split()[1]}&search[individual.patronymic]={fio.split()[2]}{post_link}'
+        link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}'\
+               f'&search[individual.name]={fio.split()[1]}&search[individual.patronymic]=' \
+               f'{fio.split(maxsplit=2)[2]}{post_link}'
         print(link)
         browser.get(unquote(link))
         if "Возникла ошибка на сервере" in browser.page_source:
