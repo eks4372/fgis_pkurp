@@ -91,8 +91,8 @@ try:
                             try:
                                 l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
                             except:
-                                l_menu.find_element(By.LINK_TEXT, 'Сведения о лицах')
-                                print('вместо "Сведения о правообладателе" найдено "Сведения о лицах"')
+                                l_menu.find_element(By.PARTIAL_LINK_TEXT, 'Сведения о лицах')
+                                print('вместо "Сведения о правообладателе" найдено "Сведения о лицах..."')
                                 m = m + 1
                                 continue
                             sleep(1)
