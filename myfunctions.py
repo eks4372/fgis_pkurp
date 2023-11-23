@@ -13,7 +13,7 @@ FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
 
 def logon(url, browser, login, password):
     try:
-        element = WebDriverWait(browser, 10).until(
+        element = WebDriverWait(browser, 30).until(
             EC.presence_of_element_located((By.XPATH,
                                             "/html/body/div/main/div/section/article/div/form/div/div[3]/div[3]/button")
                                            )
@@ -21,11 +21,11 @@ def logon(url, browser, login, password):
     except:
         print("не вижу кнопки ВОЙТИ !!")
 
-    login_block = '/html/body/div/main/div/section/article/div/form/div/div[3]/input[1]'
-    password_block = '/html/body/div/main/div/section/article/div/form/div/div[3]/input[2]'
+    # login_block = '/html/body/div/main/div/section/article/div/form/div/div[3]/input[1]'
+    # password_block = '/html/body/div/main/div/section/article/div/form/div/div[3]/input[2]'
 
-    browser.find_element(By.XPATH, login_block).send_keys(login)
-    browser.find_element(By.XPATH, password_block).send_keys(password)
+    browser.find_element(By.ID, 'login').send_keys(login)
+    browser.find_element(By.ID, "password").send_keys(password)
     browser.find_element(By.XPATH, '/html/body/div/main/div/section/article/div/form/div/div[3]/div[3]/button').click()
     sleep(1)
     page_source = browser.page_source

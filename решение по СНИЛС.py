@@ -67,7 +67,10 @@ try:
             print("не вижу меню")
         l_menu = browser.find_elements(By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']")
         for l_menu in l_menu:
-            l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+            try:
+                l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+            except:
+                l_menu.find_element(By.LINK_TEXT, 'Сведения о лицах').click()
             sleep(1)
         try:
             element = WebDriverWait(browser, 10).until(

@@ -53,9 +53,9 @@ try:
         for index_, reg_f in enumerate(reg):
             if (index_ + 1) % 2 != 0:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
-                # if 'Актуальная' not in reg_f.text:
-                #     continue
-                if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
+                if 'Актуальная' not in reg_f.text:
+                    continue
+                elif 'Актуальная' in reg_f.text:
                     reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                     sleep(1)
                     try:
@@ -68,13 +68,10 @@ try:
         for index_, reg_f in enumerate(reg):
             if (index_ + 1) % 2 != 0:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
-                # if 'Актуальная' not in reg_f.text:
-                #     continue
-                if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
-                    try:
-                        print(f"Номер права {reg_num} {reg_f.find_element(By.CLASS_NAME, 'text-success').text}")
-                    except:
-                        print(f"Номер права {reg_num} неактуальный")
+                if 'Актуальная' not in reg_f.text:
+                    continue
+                elif 'Актуальная' in reg_f.text:
+                    print(f"Номер права {reg_num} {reg_f.find_element(By.CLASS_NAME, 'text-success').text}")
                     # reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                     try:
                         element = WebDriverWait(browser, 10).until(

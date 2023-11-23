@@ -32,8 +32,9 @@ try:
         # reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
         # kad_number = kad_number.replace(':', '%3A')
         # link = f'{pre_lnk}{reg_n}{post_link}'
-        link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}'\
-               f'&search[individual.name]={fio.split()[1]}{post_link}'
+        # link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}'\
+        #        f'&search[individual.name]={fio.split()[1]}{post_link}'
+        link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}{post_link}'
         print(link)
         browser.get(unquote(link))
         if "Возникла ошибка на сервере" in browser.page_source:
@@ -53,9 +54,9 @@ try:
         for index_, reg_f in enumerate(reg):
             if (index_ + 1) % 2 != 0:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
-                # if 'Актуальная' not in reg_f.text:
-                #     continue
-                if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
+                if 'Актуальная' not in reg_f.text:
+                    continue
+                elif 'Актуальная' in reg_f.text:
                     reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                     sleep(1)
                     try:
@@ -68,13 +69,10 @@ try:
         for index_, reg_f in enumerate(reg):
             if (index_ + 1) % 2 != 0:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
-                # if 'Актуальная' not in reg_f.text:
-                #     continue
-                if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
-                    try:
-                        print(f"Номер права {reg_num} {reg_f.find_element(By.CLASS_NAME, 'text-success').text}")
-                    except:
-                        print(f"Номер права {reg_num} неактуальный")
+                if 'Актуальная' not in reg_f.text:
+                    continue
+                elif 'Актуальная' in reg_f.text:
+                    print(f"Номер права {reg_num} {reg_f.find_element(By.CLASS_NAME, 'text-success').text}")
                     # reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                     try:
                         element = WebDriverWait(browser, 10).until(
@@ -94,10 +92,10 @@ try:
                             try:
                                 l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
                             except:
-                                l_menu.find_element(By.PARTIAL_LINK_TEXT, 'Сведения о лицах')
-                                print('вместо "Сведения о правообладателе" найдено "Сведения о лицах..."')
-                                m = m + 1
-                                continue
+                                l_menu.find_element(By.PARTIAL_LINK_TEXT, 'Сведения о лицах').click()
+                                # print('вместо "Сведения о правообладателе" найдено "Сведения о лицах..."')
+                                # m = m + 1
+                                # continue
                             sleep(1)
                             m = m + 1
                             print(f'вошли в запись запись m= {m}')
@@ -140,8 +138,8 @@ try:
                 if find:
                     if reg_f.find_element(By.CLASS_NAME, 'pull-right'):
                         # ищем точное совпадение
-                        x = browser.find_elements(By.CSS_SELECTOR, '.pull-right:not([class*=" "])')
-                        reg_f_ = x[m]
+                        x = browser.find_elements(By.CSS_SELECTOR, '.panel-group .pull-right:not([class*=" "])')
+                        reg_f_ = x[m - 1]
                         print('btn')
                         reg_f_.find_element(By.LINK_TEXT, 'Корректировка сведений').click()
                         browser.switch_to.window(browser.window_handles[1])
@@ -154,9 +152,14 @@ try:
                             if "Возникла ошибка на сервере" in browser.page_source:
                                 print('ошибка сервера, пробую обновить страницу')
                                 browser.refresh()
-                        browser.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
-                        forms = browser.find_elements(By.CSS_SELECTOR,
-                                                      '#bs-tabs-react-right_holders .scope .form-group')
+                        try:
+                            browser.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+                            forms = browser.find_elements(By.CSS_SELECTOR,
+                                                          '#bs-tabs-react-right_holders .scope .form-group')
+                        except:
+                            browser.find_element(By.LINK_TEXT, 'Сведения о лицах').click()
+                            forms = browser.find_elements(By.CSS_SELECTOR,
+                                                          '.fieldset .scope .form-group')
                         f_n_p = ''
                         for form in forms:
                             # print(form.text)
