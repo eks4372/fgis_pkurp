@@ -105,6 +105,7 @@ try:
                 p = fg.find_element(By.CLASS_NAME, 'form-control').text
             elif 'Дата рождения' in fg.text:
                 bd = fg.find_element(By.CLASS_NAME, 'form-control').text
+                bd = f'{bd[-4:]}-{bd[3:5]}-{bd[:2]}'
             elif 'СНИЛС' in fg.text:
                 snils = fg.find_element(By.CLASS_NAME, 'form-control').text
             elif 'Код документа' in fg.text:
@@ -113,6 +114,9 @@ try:
                 sn = fg.find_element(By.CLASS_NAME, 'form-control').text
             elif 'Номер документа' in fg.text:
                 num = fg.find_element(By.CLASS_NAME, 'form-control').text
+            elif 'Дата документа' in fg.text:
+                doc_date = fg.find_element(By.CLASS_NAME, 'form-control').text
+                doc_date = f'{doc_date[-4:]}-{doc_date[3:5]}-{doc_date[:2]}'
             elif 'Место рождения' in fg.text:
                 bda = fg.find_element(By.CLASS_NAME, 'form-control').text
         fio_ = f'{f} {n} {p}'
@@ -139,7 +143,7 @@ try:
             df_ = df_._append(
                 {'номер обращения': number, 'Кадастровый №': k_value, 'Рег. № пр./огран.': r_value, 'ФИО': fio_,
                  'ДР': bd, 'СНИЛС': snils, 'Код документа': cod_d, 'Серия док. уд. личность': sn,
-                 'Номер док. уд. личность': num, 'Место рождения': bda},
+                 'Номер док. уд. личность': num,'Дата  док. уд. личность': doc_date, 'Место рождения': bda},
                 ignore_index=True)
         # инфа по прогрессу
         obr = obr + 1
