@@ -116,7 +116,7 @@ try:
                 num = fg.find_element(By.CLASS_NAME, 'form-control').text
             elif 'Дата документа' in fg.text:
                 doc_date = fg.find_element(By.CLASS_NAME, 'form-control').text
-                # doc_date = f'{doc_date[-4:]}-{doc_date[3:5]}-{doc_date[:2]}'
+                doc_date = f'{doc_date[-4:]}-{doc_date[3:5]}-{doc_date[:2]}'
             elif 'Место рождения' in fg.text:
                 bda = fg.find_element(By.CLASS_NAME, 'form-control').text
         fio_ = f'{f} {n} {p}'
