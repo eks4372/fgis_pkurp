@@ -154,9 +154,11 @@ try:
             f.write(number + '\n')
 except:
     if not df_.empty:
+        df['Номер док. уд. личность'] = df['Номер док. уд. личность'].apply(lambda x: str(x).zfill(3))
         df_.to_excel(f'{now}часть номеров без СНИЛСа.xlsx', index=False)
     print(f'аварийное завершение ! номер {number} не отработан')
     sys.exit()
+df['Номер док. уд. личность'] = df['Номер док. уд. личность'].apply(lambda x: str(x).zfill(3))
 df_.to_excel(file_out, index=False)
 browser.quit()
 input('Всё завершено удачно, нажмите ENTER для выхода')  # чтоб не закрывалась консоль

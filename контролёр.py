@@ -285,9 +285,11 @@ try:
         with open(fname, 'a+') as f:
             f.write(number + '\n')
 except:
+    df['Номер док. уд. личность'] = df['Номер док. уд. личность'].apply(lambda x: str(x).zfill(3))
     df.to_excel(f'{now}часть номеров проконтролированы.xlsx', index=False)
     print('аварийное завершение !')
     sys.exit()
+df['Номер док. уд. личность'] = df['Номер док. уд. личность'].apply(lambda x: str(x).zfill(3))
 df.to_excel(file_out, index=False)
 browser.quit()
 input('Всё завершено удачно, нажмите ENTER для выхода')  # чтоб не закрывалась консоль
