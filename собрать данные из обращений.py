@@ -72,7 +72,7 @@ try:
             t = tab.find_elements(By.CSS_SELECTOR, ".scroll-y .table tbody tr")
             edit_link = t[0].find_element(By.LINK_TEXT, 'Внесение сведений').get_attribute("href")
             for i in t:
-                if 'Запрещение регистрации' in i.text:
+                if 'Запрещение регистрации' in i.text:  # Внесение сведений
                     tds = i.find_elements(By.TAG_NAME, 'td')
                     print(f'обр: {number}, кад№: {tds[3].text}, №ареста: {tds[4].text}, ФИО: {tds[7].text}')
                     kad_numbers.append(tds[3].text)

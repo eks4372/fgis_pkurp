@@ -166,6 +166,10 @@ try:
                                 if 'СНИЛС' in form.text:
                                     if not (form.find_element(By.CLASS_NAME, 'form-control').text):
                                         print('СНИЛС отсутствует')
+                                    else:
+                                        snils_old = form.find_element(By.CLASS_NAME, 'form-control').text
+                                        print(f'СНИЛС есть: {snils_old}')
+                                        input('нажмите enter')
 
                                     # Выполняем JavaScript, чтобы получить XPath элемента
                                     element_xpath = browser.execute_script(
