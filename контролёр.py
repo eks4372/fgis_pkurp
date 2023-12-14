@@ -285,7 +285,7 @@ try:
         with open(fname, 'a+') as f:
             f.write(number + '\n')
 except:
-    df['Номер док. уд. личность'] = df['Номер док. уд. личность'].apply(lambda x: str(x).zfill(6))
+    df['Номер док. уд. личность'] = df['Номер док. уд. личность'].apply(lambda x: str(x).zfill(6))  # 6 значный номер
     df.to_excel(f'{now}часть номеров проконтролированы.xlsx', index=False)
     print('аварийное завершение !')
     sys.exit()
