@@ -5,20 +5,16 @@ import re
 
 def check_date_in_range(string):
     pattern = r"\d{2}\.\d{2}\.\d{4}"
-
     matches = re.findall(pattern, string)
 
     if len(matches) >= 2:
         second_date = matches[1]
         year = int(second_date[-4:])
-
-
     else:
         year = int(input('не найдена дата погашения, введите год вручную: '))
 
     if 2015 <= year <= 2016:
         return True
-
     return False
 
 
