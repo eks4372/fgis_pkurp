@@ -49,8 +49,10 @@ df = pd.read_excel(file)
 pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?search[record.property_number]='
 post_link = '&commit=Запросить'
 obr = 0
+err = 0
 try:
     for index, row in df.iterrows():
+        find = False
         print(f'{index + 1} из {len(df)}')
         kad_number = row['Кадастровый №']
         er = row['Ошибка в данных']
@@ -132,7 +134,7 @@ try:
         for i in items:
             # print(i.text)
             if check_date_in_range(start_date, end_date, i.text, 1):
-
+                find = True
                 # print(f'базовая запись: {items[-1].text}')
                 kuvd = i.find_element(By.PARTIAL_LINK_TEXT, 'КУВД').text
                 print(f"КУВД: {kuvd}")
@@ -172,6 +174,25 @@ try:
                     print(f'[ERROR] что-то пошло не так код ответа {post.status_code}')
                     print(post.text)
                     sys.exit()
+        if not find:
+            print(f'[ERROR] запись с кадастровым номером {kad_number} входит в дату  {start_date} - {end_date}')
+            # записываем номер пакета в файл
+            with open(fname, 'a+') as f:
+                f.write(kad_number + '\n')
+                f.close()
+                # и в ошибки
+            dir_err = myfunctions.make_dir('пропущенные пакеты')
+            err_file = f'{dir_err}/err_numbers.txt'
+            if os.path.isfile(err_file):
+                flag = 'a'
+            else:
+                flag = 'w'
+            with open(err_file, flag) as f:
+                err += 1
+                f.write(
+                    f'[ERROR] запись с кадастровым номером {kad_number} входит в дату  {start_date} - {end_date}' + '\n'
+                )
+            continue
         browser.close()
         browser.switch_to.window(browser.window_handles[0])
 
@@ -204,7 +225,7 @@ try:
               f' осталось {len(df) - obr}')
         # записываем номер пакета в файл
         with open(fname, 'a+') as f:
-            f.write(number + '\n')
+            f.write(kad_number + '\n')
 except:
 
     df.to_excel(f'{now}часть номеров по дате проконтролированы.xlsx', index=False)
@@ -212,5 +233,10 @@ except:
     sys.exit()
 
 df.to_excel(file_out, index=False)
+if err:
+    with open(err_file, 'a') as f:
+        f.write('-' * 10 + '\n')
+    myfunctions.explore(dir_err)
+    os.startfile(f'{dir_err}\err_numbers.txt', 'open')
 browser.quit()
 input('Всё завершено удачно, нажмите ENTER для выхода')  # чтоб не закрывалась консоль
