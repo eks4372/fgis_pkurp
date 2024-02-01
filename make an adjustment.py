@@ -2,6 +2,7 @@ from bot_pkurp_start import *
 import pandas as pd
 import re
 from urllib.parse import unquote
+from urllib.parse import quote
 
 file = settings['file']['start_file']
 # dir_ = myfunctions.make_dir('корректировка создана')
@@ -32,10 +33,11 @@ try:
         # reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
         # kad_number = kad_number.replace(':', '%3A')
         # link = f'{pre_lnk}{reg_n}{post_link}'
-        link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}'\
-               f'&search[individual.name]={fio.split()[1]}{post_link}'
+        link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}%25'\
+               f'&search[individual.name]={fio.split()[1]}%25{post_link}'
         print(link)
-        browser.get(unquote(link))
+        # browser.get(unquote(link))
+        browser.get(unquote(quote(link)))
         if "Возникла ошибка на сервере" in browser.page_source:
             print('ошибка сервера, пробую обновить страницу')
             browser.refresh()
