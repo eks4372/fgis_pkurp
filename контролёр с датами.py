@@ -7,7 +7,7 @@ from date_select import selected_dates
 from datetime import datetime
 
 
-def check_date_in_range(end, start, string, n = 2):
+def check_date_in_range(end, start, string, n=2):
     pattern = r"\d{2}\.\d{2}\.\d{4}"
     matches = re.findall(pattern, string)
 
@@ -20,7 +20,8 @@ def check_date_in_range(end, start, string, n = 2):
     else:
         year = input('не найдена дата погашения, введите год вручную: ')
 
-    if datetime.strptime(end, "%d.%m.%Y") <= datetime.strptime(year, "%d.%m.%Y") <= datetime.strptime(start, "%d.%m.%Y"):
+    if datetime.strptime(end, "%d.%m.%Y") <= datetime.strptime(year, "%d.%m.%Y") <= datetime.strptime(start,
+                                                                                                      "%d.%m.%Y"):
         return True
     return False
 
@@ -89,7 +90,7 @@ try:
                 if (index_ + 1) % 2 != 0:
                     if reg_num in reg_f.text:
                         if 'Актуальная' in reg_f.text:
-                            actual =True
+                            actual = True
                         reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                         sleep(1)
                         try:
@@ -106,7 +107,7 @@ try:
                 if (index_ + 1) % 2 != 0:
                     if kad_number in reg_f.text:
                         if 'Актуальная' in reg_f.text:
-                            actual =True
+                            actual = True
                         reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                         sleep(1)
                         try:
@@ -162,8 +163,6 @@ try:
                 s = Session(driver=browser)
                 s.transfer_driver_cookies_to_session()
                 post = s.post('http://ppoz-service-bal-01.prod.egrn:9001/manager/requests', json=data)
-                # print(post.text)
-                # print(post.status_code)
                 print(post.json())
                 # print(post.json()['requests'])
                 if 200 <= post.status_code < 400:
