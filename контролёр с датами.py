@@ -101,7 +101,7 @@ try:
                             sys.exit()
                         break
         else:
-            print(f'По номеру права {kad_number} найдено {int(len(reg) / 2)} записей')
+            print(f'По кадастровому номеру {kad_number} найдено {int(len(reg) / 2)} записей')
             for index_, reg_f in enumerate(reg):
                 if (index_ + 1) % 2 != 0:
                     if kad_number in reg_f.text:
