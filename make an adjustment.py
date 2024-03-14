@@ -107,10 +107,10 @@ try:
                             try:
                                 l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
                             except:
-                                l_menu.find_element(By.PARTIAL_LINK_TEXT, 'Сведения о лицах')
-                                print('вместо "Сведения о правообладателе" найдено "Сведения о лицах..."')
-                                m = m + 1
-                                continue
+                                l_menu.find_element(By.PARTIAL_LINK_TEXT, 'Сведения о лицах').click()
+                                # print('вместо "Сведения о правообладателе" найдено "Сведения о лицах..."')
+                                # m = m + 1
+                                # continue
                             sleep(1)
                             m = m + 1
                             print(f'вошли в запись запись m= {m}')
@@ -142,88 +142,104 @@ try:
                                         print(f'{fio} найден{x}')
                                         find = True
                                         actual = True
-                                        break
+                                        # break
                                     else:
                                         print(f'{f_n_p} не равно {fio}')
+                                elif 'СНИЛС' in group.text:
+                                    snils_old = group.find_element(By.CLASS_NAME, 'form-control').text
+                                    if find:
+                                        break
                             else:
                                 if m == int(len(reg) / 2):
                                     print(f'{fio} не найден в {reg_num}')
                                     sys.exit()
             else:
                 if find:
-                    if reg_f.find_element(By.CLASS_NAME, 'pull-right'):
-                        # ищем точное совпадение
-                        x = browser.find_elements(By.CSS_SELECTOR, '.pull-right:not([class*=" "])')
-                        reg_f_ = x[m]
-                        print('btn')
-                        reg_f_.find_element(By.LINK_TEXT, 'Корректировка сведений').click()
-                        browser.switch_to.window(browser.window_handles[1])
-                        try:
-                            element = WebDriverWait(browser, 10).until(
-                                EC.presence_of_element_located((By.CLASS_NAME, "tab-group"))
-                            )
-                        except:
-                            print('не загрузилась запись об изменении')
-                            if "Возникла ошибка на сервере" in browser.page_source:
-                                print('ошибка сервера, пробую обновить страницу')
-                                browser.refresh()
-                        browser.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
-                        forms = browser.find_elements(By.CSS_SELECTOR,
-                                                      '#bs-tabs-react-right_holders .scope .form-group')
-                        f_n_p = ''
-                        for form in forms:
-                            # print(form.text)
-                            if form.text == '':
-                                continue
-                            elif 'Фамилия' in form.text:
-                                f = form.find_element(By.CLASS_NAME, 'form-control').text
-                            elif 'Имя' in form.text:
-                                n = form.find_element(By.CLASS_NAME, 'form-control').text
-                            elif 'Отчество' in form.text:
-                                p = form.find_element(By.CLASS_NAME, 'form-control').text
-                                f_n_p = f'{f} {n} {p}'
-                                f_n_p = f_n_p.strip()
-                                print(f_n_p)
-                            if f_n_p == fio:
-                                if 'СНИЛС' in form.text:
-                                    form.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
-                                    break
-                        btns = browser.find_elements(By.CLASS_NAME, 'btn-primary')
-                        for b in btns:
-                            if b.text == 'Далее':
-                                b.click()
-                                print('далее')
-                        browser.find_element(By.CSS_SELECTOR,
-                                             "#tech-error-react input[name='edited_attrs[0][new]'][type='string']") \
-                            .send_keys(snils)
-                        browser.find_element(By.CLASS_NAME, 'fa-plus').click()
-                        browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(
-                            f'ид запроса в СМЭВ {fio}: {m_i}')
-                        browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-                        while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
-                            wait = WebDriverWait(browser, 30)
-                            cert_value_present = wait.until(
-                                EC.presence_of_element_located((By.CSS_SELECTOR, "#CertListBox option[value]")))
-                            print('нет сертификата')
-                        browser.find_element(By.CLASS_NAME, 'btn-next').click()
-                        print("подписать и отправить")
-                        wait = WebDriverWait(browser, 100)
-                        wait_number = wait.until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'alert-success')))
+                    if snils_old != snils:
+                        if reg_f.find_element(By.CLASS_NAME, 'pull-right'):
+                            # ищем точное совпадение
+                            x = browser.find_elements(By.CSS_SELECTOR, '.pull-right:not([class*=" "])')
+                            reg_f_ = x[m]
+                            print('btn')
+                            reg_f_.find_element(By.LINK_TEXT, 'Корректировка сведений').click()
+                            browser.switch_to.window(browser.window_handles[1])
+                            try:
+                                element = WebDriverWait(browser, 10).until(
+                                    EC.presence_of_element_located((By.CLASS_NAME, "tab-group"))
+                                )
+                            except:
+                                print('не загрузилась запись об изменении')
+                                if "Возникла ошибка на сервере" in browser.page_source:
+                                    print('ошибка сервера, пробую обновить страницу')
+                                    browser.refresh()
+                            try:
+                                browser.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+                            except:
+                                browser.find_element(By.LINK_TEXT, 'Сведения о лицах').click()
+                            forms = browser.find_elements(By.CSS_SELECTOR,
+                                                          '#bs-tabs-react-right_holders .scope .form-group')
+                            if not forms:
+                                forms = browser.find_elements(By.CSS_SELECTOR,
+                                            '.scope .fieldset .scope .fieldset.fieldset .scope .fieldset .form-group')
+                            f_n_p = ''
+                            for form in forms:
+                                # print(form.text)
+                                if form.text == '':
+                                    continue
+                                elif 'Фамилия' in form.text:
+                                    f = form.find_element(By.CLASS_NAME, 'form-control').text
+                                elif 'Имя' in form.text:
+                                    n = form.find_element(By.CLASS_NAME, 'form-control').text
+                                elif 'Отчество' in form.text:
+                                    p = form.find_element(By.CLASS_NAME, 'form-control').text
+                                    f_n_p = f'{f} {n} {p}'
+                                    f_n_p = f_n_p.strip()
+                                    print(f_n_p)
+                                if f_n_p == fio:
+                                    if 'СНИЛС' in form.text:
+                                        form.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
+                                        break
+                            if actual:
+                                btns = browser.find_elements(By.CLASS_NAME, 'btn-primary')
+                                for b in btns:
+                                    if b.text == 'Далее':
+                                        b.click()
+                                        print('далее')
+                                browser.find_element(By.CSS_SELECTOR,
+                                                     "#tech-error-react input[name='edited_attrs[0][new]'][type='string']") \
+                                    .send_keys(snils)
+                                browser.find_element(By.CLASS_NAME, 'fa-plus').click()
+                                browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(
+                                    f'ид запроса в СМЭВ {fio}: {m_i}')
+                                browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
+                                while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
+                                    wait = WebDriverWait(browser, 30)
+                                    cert_value_present = wait.until(
+                                        EC.presence_of_element_located((By.CSS_SELECTOR, "#CertListBox option[value]")))
+                                    print('нет сертификата')
+                                browser.find_element(By.CLASS_NAME, 'btn-next').click()
+                                print("подписать и отправить")
+                                wait = WebDriverWait(browser, 100)
+                                wait_number = wait.until(
+                                    EC.presence_of_element_located((By.CLASS_NAME, 'alert-success')))
 
-                        res = re.search(r'Other-\d{4}-\d{2}-\d{2}-\d+',
-                                        browser.find_element(By.CLASS_NAME, 'alert-success').text)
-                        if res:
-                            number = res.group()
-                            print(number)
-                        else:
-                            print("Не удалось найти строку с номером обращения")
-                            sys.exit()
-                        browser.close()
-                        browser.switch_to.window(browser.window_handles[0])
-                        break
+                                res = re.search(r'Other-\d{4}-\d{2}-\d{2}-\d+',
+                                                browser.find_element(By.CLASS_NAME, 'alert-success').text)
+                                if res:
+                                    number = res.group()
+                                    print(number)
+                                else:
+                                    print("Не удалось найти строку с номером обращения")
+                                    sys.exit()
+                                browser.close()
+                                browser.switch_to.window(browser.window_handles[0])
+                                break
+                            else:
+                                continue
+                    else:
+                        actual = False
         if not actual:
-            print(f'по рег номеру {reg_num} нет актуальных записей')
+            print(f'по рег номеру {reg_num} СНИЛС уже актуален')
             dir_err = myfunctions.make_dir('ошибки')
             err_file = f'{dir_err}/err_numbers.txt'
             if os.path.isfile(err_file):
@@ -231,8 +247,8 @@ try:
             else:
                 flag = 'w'
             with open(err_file, flag) as f:
-                f.write(f'по рег номеру {reg_num} нет актуальных записей' + '\n')
-            df.at[index, 'номер обращения корректировки'] = 'обращение не создано'
+                f.write(f'по рег номеру {reg_num} СНИЛС уже актуален' + '\n')
+            df.at[index, 'номер обращения корректировки'] = 'обращение не создано (СНИЛС уже актуален)'
             obr = obr + 1
             continue
         else:
