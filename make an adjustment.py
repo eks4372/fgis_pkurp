@@ -31,7 +31,10 @@ try:
             fio = fio.replace('  ', ' ')
             df.at[index, 'ФИО'] = fio
         snils = row.СНИЛС
-        gender = row.пол
+        try:
+            gender = row.пол
+        except:
+            gender = 'Male'
         m_i = row.message_id
         # reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
         # kad_number = kad_number.replace(':', '%3A')
