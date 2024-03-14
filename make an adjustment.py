@@ -13,7 +13,7 @@ logon(url)
 print(f'чтение файла "{file}"')
 df = pd.read_excel(file)
 # pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?utf8=%E2%9C%93&search%5Brecord.law_number%5D='
-pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?search[record.property_number]='
+pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?search'
 # post_link = '&search%5Bfilter%5D=&commit=Запросить'
 post_link = '&commit=Запросить'
 obr = 0
@@ -22,7 +22,10 @@ try:
     for index, row in df.iterrows():
         print(f'{index + 1} из {len(df)}')
         reg_num = row['Рег. № пр./огран.']
-        kad_number = row['Кадастровый №']
+        try:
+            kad_number = row['Кадастровый №']
+        except:
+            kad_number = ''
         fio = row.ФИО
         if '  ' in fio:
             fio = fio.replace('  ', ' ')
@@ -33,8 +36,13 @@ try:
         # reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
         # kad_number = kad_number.replace(':', '%3A')
         # link = f'{pre_lnk}{reg_n}{post_link}'
-        link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}%25'\
-               f'&search[individual.name]={fio.split()[1]}%25{post_link}'
+        if kad_number:
+            link = f'{pre_lnk}[record.property_number]={kad_number}&search[record.law_number]={reg_num}' \
+                   f'&search[individual.surname]={fio.split()[0]}%25&search[individual.name]=' \
+                   f'{fio.split()[1]}%25{post_link}'
+        else:
+            link = f'{pre_lnk}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}%25' \
+                   f'&search[individual.name]={fio.split()[1]}%25{post_link}'
         print(link)
         # browser.get(unquote(link))
         browser.get(unquote(quote(link)))
@@ -121,7 +129,7 @@ try:
                                     p = group.find_element(By.CLASS_NAME, 'form-control').text
                                     # break
                                     f_n_p = f'{f} {n} {p}'
-                                    f_n_p =f_n_p.strip()
+                                    f_n_p = f_n_p.strip()
                                     print(f_n_p)
                                     if f_n_p == fio:
                                         if gender == 'Male':
