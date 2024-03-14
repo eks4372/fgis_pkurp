@@ -200,7 +200,7 @@ try:
         print(f'номер обращения: {number}')
         for i in post.json()['requests']:
             for u in i['responsibleUsers']:
-                if u['roleTitle'] == 'Специалист кадастровой палаты':
+                if 'Специалист кадастровой палаты' in u['roleTitle']:
                     # fio = u['firstName'] + u['lastName'] + u['secondName']
                     fio_kad = f"{u['lastName']} {u['firstName']} {u['secondName']}"
                     date_kad = u['completionDate']
