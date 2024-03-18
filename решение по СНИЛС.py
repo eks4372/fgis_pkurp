@@ -19,7 +19,10 @@ try:
         number = row['номер обращения корректировки']
         fio = row.ФИО
         snils = row.СНИЛС
-        gender = row.пол
+        try:
+            gender = row.пол
+        except:
+            gender = 'Male'
         post_link = '/registry_data_containers/statements'
         sved_page = f'{pre_lnk}{number}{post_link}'
         print(sved_page)
