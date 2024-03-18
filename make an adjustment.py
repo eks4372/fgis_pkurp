@@ -206,11 +206,15 @@ try:
                                         b.click()
                                         print('далее')
                                 browser.find_element(By.CSS_SELECTOR,
-                                                     "#tech-error-react input[name='edited_attrs[0][new]'][type='string']") \
+                                               "#tech-error-react input[name='edited_attrs[0][new]'][type='string']") \
                                     .send_keys(snils)
                                 browser.find_element(By.CLASS_NAME, 'fa-plus').click()
-                                browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(
-                                    f'ид запроса в СМЭВ {fio}: {m_i}')
+                                if re.match('\d', m_i):
+                                    browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').send_keys(
+                                        f'ид запроса в СМЭВ {fio}: {m_i}')
+                                else:
+                                    browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').\
+                                        send_keys('{m_i}')
                                 browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
                                 while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
                                     wait = WebDriverWait(browser, 30)
