@@ -39,13 +39,19 @@ try:
         # reg_n = reg_num.replace(':', '%3A').replace('/', '%2F')
         # kad_number = kad_number.replace(':', '%3A')
         # link = f'{pre_lnk}{reg_n}{post_link}'
-        if kad_number:
-            link = f'{pre_lnk}[record.property_number]={kad_number}&search[record.law_number]={reg_num}' \
-                   f'&search[individual.surname]={fio.split()[0]}%25&search[individual.name]=' \
-                   f'{fio.split()[1]}%25{post_link}'
+        if len(fio.split()[0]) > 4 and len(fio.split()[1]) > 4:
+            if kad_number:
+                link = f'{pre_lnk}[record.property_number]={kad_number}&search[record.law_number]={reg_num}' \
+                       f'&search[individual.surname]={fio.split()[0]}%25&search[individual.name]=' \
+                       f'{fio.split()[1]}%25{post_link}'
+            else:
+                link = f'{pre_lnk}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}%25' \
+                       f'&search[individual.name]={fio.split()[1]}%25{post_link}'
         else:
-            link = f'{pre_lnk}&search[record.law_number]={reg_num}&search[individual.surname]={fio.split()[0]}%25' \
-                   f'&search[individual.name]={fio.split()[1]}%25{post_link}'
+            if kad_number:
+                link = f'{pre_lnk}[record.property_number]={kad_number}&search[record.law_number]={reg_num}'
+            else:
+                link = f'{pre_lnk}&search[record.law_number]={reg_num}'
         print(link)
         # browser.get(unquote(link))
         browser.get(unquote(quote(link)))
