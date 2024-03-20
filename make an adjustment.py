@@ -220,7 +220,7 @@ try:
                                         f'ид запроса в СМЭВ {fio}: {m_i}')
                                 else:
                                     browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').\
-                                        send_keys('{m_i}')
+                                        send_keys(f'{m_i}')
                                 browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
                                 while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
                                     wait = WebDriverWait(browser, 30)
