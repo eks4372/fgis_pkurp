@@ -3,7 +3,6 @@ import pandas as pd
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 
 file = settings['file']['snils_file']
-# dir_ = myfunctions.make_dir('корректировка СНИЛС')
 file_out = f'{now}_результат решений.xlsx'
 url = 'http://pkurp-app-balancer-01.prod.egrn/requests?filter=mine'
 logon(url)
@@ -15,20 +14,12 @@ obr = 0
 try:
     for index, row in df.iterrows():
         print(f'{index + 1} из {len(df)}')
-        reg_num = row['Рег. № пр./огран.']
+        kad_number = row['Кадастровый №']
         number = row['номер обращения корректировки']
-        fio = row.ФИО
-        snils = row.СНИЛС
-        try:
-            gender = row.пол
-        except:
-            gender = 'Male'
         post_link = '/registry_data_containers/statements'
         sved_page = f'{pre_lnk}{number}{post_link}'
         print(sved_page)
 
-
-        # browser.get(sved_page)
 
         def first():
             browser.get(sved_page)
@@ -45,20 +36,21 @@ try:
         first()
 
         try:
-            element = WebDriverWait(browser, 30).until(
+            element = WebDriverWait(browser, 3).until(
                 EC.text_to_be_present_in_element((By.CSS_SELECTOR, '.scroll-y .table tbody tr'), 'Изменение сведений'))
         except TimeoutException:
             print("не вижу прав !!!")
         except StaleElementReferenceException:
             print("Элемент стал устаревшим, повторяем попытку...")
             try:
-                element = WebDriverWait(browser, 30).until(
-                    EC.text_to_be_present_in_element((By.CSS_SELECTOR, '.scroll-y .table tbody tr'), 'Изменение сведений'))
+                element = WebDriverWait(browser, 3).until(
+                    EC.text_to_be_present_in_element((By.CSS_SELECTOR, '.scroll-y .table tbody tr'),
+                                                     'Изменение сведений'))
             except TimeoutException:
                 print("не вижу прав !!!")
         t = browser.find_elements(By.CSS_SELECTOR, '.scroll-y .table tbody tr')
         for tr in t:
-            if reg_num in tr.text and fio in tr.text:
+            if kad_number in tr.text:
                 tr.find_element(By.LINK_TEXT, 'Изменение сведений').click()
                 sleep(1)
                 break
@@ -70,45 +62,32 @@ try:
             print("не вижу меню")
         l_menu = browser.find_elements(By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']")
         for l_menu in l_menu:
-            try:
-                l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
-            except:
-                l_menu.find_element(By.LINK_TEXT, 'Сведения о лицах').click()
+
+            l_menu.find_element(By.PARTIAL_LINK_TEXT, 'Адрес').click()
+
             sleep(1)
+            break
         try:
             element = WebDriverWait(browser, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "form-group"))
             )
         except:
             print("не вижу страницы сведений !!")
-        f_groups = browser.find_elements(By.CLASS_NAME, 'form-group')
-        f_n_p = ''
+        f_groups = browser.find_elements(By.CSS_SELECTOR, '.scope .scope .scope .scope .scope  .scope')
         for group in f_groups:
             if group.text == '':
                 continue
-            elif 'Фамилия' in group.text:
-                f = group.find_element(By.CLASS_NAME, 'form-control').text
-            elif 'Имя' in group.text:
-                n = group.find_element(By.CLASS_NAME, 'form-control').text
-            elif 'Отчество' in group.text:
-                p = group.find_element(By.CLASS_NAME, 'form-control').text
-                f_n_p = f'{f} {n} {p}'
-                f_n_p = f_n_p.strip()
-                print(f_n_p)
-                if f_n_p == fio:
-                    if gender == 'Male':
-                        x = ''
-                    else:
-                        x = 'а'
-                    print(f'{fio} найден{x}')
-            if f_n_p == fio:
-                if 'СНИЛС' in group.text:
-                    wait = WebDriverWait(browser, 10)
-                    element = wait.until(
-                        EC.presence_of_element_located((By.CLASS_NAME, 'fa-check')))
+            elif 'Район' in group.text:
+                wait = WebDriverWait(browser, 10)
+                element = wait.until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'fa-check')))
 
-                    group.find_element(By.CLASS_NAME, 'fa-check').click()
-                    break
+                # group.find_element(By.CLASS_NAME, 'fa-check').click()
+                f = group.find_elements(By.CLASS_NAME, 'fa-check')
+                for i in f:
+                    i.click()
+                break
+
         nav_tab = browser.find_element(By.CLASS_NAME, 'nav-tabs')
         nav_tab.find_element(By.LINK_TEXT, 'Документы-основания').click()
         print('переходим в документы-основания')
@@ -123,7 +102,8 @@ try:
 
         def check_delete():
             try:
-                x = browser.find_elements(By.CSS_SELECTOR, '#bs-tabs-registry_record_nav-underlying_documents .glyphicon-remove-circle')
+                x = browser.find_elements(By.CSS_SELECTOR,
+                                          '#bs-tabs-registry_record_nav-underlying_documents .glyphicon-remove-circle')
             except NoSuchElementException:
                 return False
             if len(x) >= 1:
@@ -138,50 +118,30 @@ try:
             browser.find_element(By.XPATH,
                                  '/html/body/div[7]/div/form/div[1]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/div/div[1]/div/div[2]/div').click()
             print('удалили документ-основание')
-        btns = browser.find_elements(By.ID, 'add-btn-underlying_documents')
-        n = 0
+        btns = browser.find_elements(By.CSS_SELECTOR, '#chooseBaseDocumentsForChangeRecord .btn-default')
         for b in btns:
-            if n == 1:
+            if 'Выбрать из обращения' in b.text:
                 b.click()
-            n += 1
-        print('добавить документы-основания')
+        print('Выбрать из обращения')
         try:
             element = WebDriverWait(browser, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "form-group"))
+                EC.presence_of_element_located((By.CLASS_NAME, 'in'))
             )
         except:
-            print("не вижу страницы редактирования общих сведений !!")
-        f_groups = browser.find_elements(By.CLASS_NAME, 'form-group')
-        for group in f_groups:
-            if not group.text:
-                continue
-            elif '*Код документа' in group.text:
-                print('ставим Код документа')
-                group.find_element(By.CSS_SELECTOR, "*[class^='select2-selection select2-selection--single']").click()
-                browser.find_element(By.CLASS_NAME, "select2-search__field").send_keys('61 закона')
-                options = browser.find_element(By.CLASS_NAME, 'select2-results__options') \
-                    .find_elements(By.CLASS_NAME, 'select2-results__option')
-                for option in options:
-                    if option.text == 'Заявление об исправлении технических ошибок в записях ЕГРН (статья 61 Закона)':
-                        option.click()
-                        break
-            elif '*Наименование' in group.text:
-                print('ставим наименование')
-                fild = group.find_element(By.ID,
-                                          f'registry_data_container[underlying_documents_holder_attributes][underlying_documents_attributes]'
-                                          f'[{i}][document_name]')
-                fild.clear()
-                fild.send_keys('Заявление об исправлении технических ошибок в записях ЕГРН (статья 61 Закона)')
-            elif '*Дата документа' in group.text:
-                print('ставим дату')
-                fild = group.find_element(By.ID,
-                                          f'registry_data_container[underlying_documents_holder_attributes][underlying_documents_attributes]'
-                                          f'[{i}][document_date]')
-                fild.clear()
-                date = datetime.datetime.now().strftime("%d.%m.%Y")
-                fild.click()
-                fild.send_keys(date)
-                break
+            print("не вижу страницы с выбором документов-щснований !!")
+        check_l = browser.find_element(By.CLASS_NAME, 'tree-scroll') \
+            .find_elements(By.CSS_SELECTOR, "*[class^='docs-element js-docs-element']")
+        for ch in check_l:
+            # print(ch.text)
+            if 'Заявление' in ch.text:
+                ch.find_element(By.CLASS_NAME, 'js-autofill-element').click()
+        browser.find_element(By.CSS_SELECTOR, "*[class^='btn btn-primary js-autofill-submit']").click()
+        try:
+            element = WebDriverWait(browser, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "toggle-node"))
+            )
+        except:
+            print("не вижу страницы с заполненными документами-основаниями !!")
 
         browser.find_element(By.CLASS_NAME, 'js-spinner-transform').click()
         print('сохранить запись')
