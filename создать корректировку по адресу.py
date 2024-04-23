@@ -23,7 +23,8 @@ try:
         print(f'{index + 1} из {len(df)}')
         kad_number = row['Кадастровый №']
         link = f'{pre_lnk}[record.property_number]={kad_number}'
-
+        f = False
+        fk = False
         print(link)
         # browser.get(unquote(link))
         browser.get(unquote(quote(link)))
@@ -40,13 +41,15 @@ try:
         m = 0
         find = False
         actual = False
+        adj = False
+        adj_k = False
         print(f'По кадастровому № {kad_number} найдено {int(len(rec) / 2)} записей')
         for index_, reg_f in enumerate(rec):
             if (index_ + 1) % 2 != 0:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
                 # if 'Актуальная' not in reg_f.text:
                 #     continue
-                if 'Запись о помещении' in reg_f.text or 'Запись о помещении' in reg_f.text or 'Запись о помещении' in reg_f.text:
+                if 'Запись о помещении' in reg_f.text or 'Запись о машин' in reg_f.text or 'Запись о помещении' in reg_f.text:
                     reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
                     sleep(1)
                     try:
@@ -91,92 +94,123 @@ try:
                             elif 'Район' in group.text:
                                 find = True
                                 f = group.find_elements(By.CLASS_NAME, 'form-group')
+                            elif 'Корпус' in group.text:
+                                find = True
+                                fk = group.find_elements(By.CLASS_NAME, 'form-group')
                                 break
 
 
             else:
                 if find:
-                    for i in f:
-                        if i.find_element(By.CLASS_NAME, 'form-control'):
-                            print(f'есть заполненное поле {i.text}')
-                            adj = True
+                    if f:
+                        for i in f:
+                            if i.find_element(By.CLASS_NAME, 'form-control'):
+                                print(f'есть заполненное поле {i.text}')
+                                adj = True
+                                break
+                            else:
+                                print('поля пусты - корректировка не нужна')
+                                adj = False
+                    if fk:
+                        for i in fk:
+                            if i.find_element(By.CLASS_NAME, 'form-control'):
+                                print(f'есть заполненное поле {i.text}')
+                                # print((i.text).split('\n')[1])
+                                if 'корп' != (i.text).split('\n')[1]:
+                                    adj_k = True
+                                    break
+                                else:
+                                    print('поля заполнено корректно, корректировка не нужна')
+                                    adj_k = False
+                                    break
+                    if adj or adj_k:
+                        if reg_f.find_element(By.CLASS_NAME, 'pull-right'):
+
+                            x = browser.find_elements(By.CSS_SELECTOR, '.pull-right:not([class*=" "])')
+                            reg_f_ = x[m]
+                            print('btn')
+                            reg_f_.find_element(By.LINK_TEXT, 'Корректировка сведений').click()
+                            browser.switch_to.window(browser.window_handles[1])
+                            try:
+                                element = WebDriverWait(browser, 10).until(
+                                    EC.presence_of_element_located((By.CLASS_NAME, "tab-group"))
+                                )
+                            except:
+                                print('не загрузилась запись об изменении')
+                                if "Возникла ошибка на сервере" in browser.page_source:
+                                    print('ошибка сервера, пробую обновить страницу')
+                                    browser.refresh()
+
+                            browser.find_element(By.PARTIAL_LINK_TEXT, 'Адрес').click()
+
+                            forms = browser.find_elements(By.CSS_SELECTOR,
+                                                          '#bs-tabs-react-right_holders .scope .form-group')
+                            if not forms:
+                                forms = browser.find_elements(By.CSS_SELECTOR, '.scope .scope .scope .scope .scope  .scope')
+
+                            if adj:
+                                for form in forms:
+                                    if 'Район' in form.text:
+                                        f = form.find_elements(By.CLASS_NAME, 'fa-check-square-o')
+                                        for i in f:
+                                            i.click()
+                                        break
+                                        # if 'Тип' in form.text:
+                                        #     i.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
+                                        # elif 'Наименование' in i.text:
+                                        #     i.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
+                            if adj_k:
+                                for form in forms:
+                                    if 'Корпус' in form.text:
+                                        f = form.find_elements(By.CLASS_NAME, 'fa-check-square-o')
+                                        f[0].click()
+                                        break
+
+                            btns = browser.find_elements(By.CLASS_NAME, 'btn-primary')
+                            for b in btns:
+                                if b.text == 'Далее':
+                                    b.click()
+                                    print('далее')
+                            # browser.find_element(By.CSS_SELECTOR,
+                            #                "#tech-error-react input[name='edited_attrs[0][new]'][type='string']") \
+                            #     .send_keys(snils)
+                            # browser.find_element(By.CLASS_NAME, 'fa-plus').click()
+
+                            # browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').\
+                            #         send_keys(f'удаление района в городе')
+                            if adj_k:
+                                n = len(browser.find_elements(By.CSS_SELECTOR, '.table tr'))
+                                browser.find_element(By.CSS_SELECTOR,
+                                                     f"#tech-error-react input[name='edited_attrs[{n-2}][new]'][type='string']").send_keys('корп')
+                            browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
+                            while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
+                                wait = WebDriverWait(browser, 30)
+                                cert_value_present = wait.until(
+                                    EC.presence_of_element_located((By.CSS_SELECTOR, "#CertListBox option[value]")))
+                                print('нет сертификата')
+                            browser.find_element(By.CLASS_NAME, 'btn-next').click()
+                            print("подписать и отправить")
+                            wait = WebDriverWait(browser, 100)
+                            wait_number = wait.until(
+                                EC.presence_of_element_located((By.CLASS_NAME, 'alert-success')))
+
+                            res = re.search(r'Other-\d{4}-\d{2}-\d{2}-\d+',
+                                            browser.find_element(By.CLASS_NAME, 'alert-success').text)
+                            if res:
+                                number = res.group()
+                                print(number)
+                            else:
+                                print("Не удалось найти строку с номером обращения")
+                                sys.exit()
+                            browser.close()
+                            browser.switch_to.window(browser.window_handles[0])
                             break
                         else:
-                            print('поля пусты - корректировка не нужна')
-                            adj = False
-
-                    if reg_f.find_element(By.CLASS_NAME, 'pull-right'):
-
-                        x = browser.find_elements(By.CSS_SELECTOR, '.pull-right:not([class*=" "])')
-                        reg_f_ = x[m]
-                        print('btn')
-                        reg_f_.find_element(By.LINK_TEXT, 'Корректировка сведений').click()
-                        browser.switch_to.window(browser.window_handles[1])
-                        try:
-                            element = WebDriverWait(browser, 10).until(
-                                EC.presence_of_element_located((By.CLASS_NAME, "tab-group"))
-                            )
-                        except:
-                            print('не загрузилась запись об изменении')
-                            if "Возникла ошибка на сервере" in browser.page_source:
-                                print('ошибка сервера, пробую обновить страницу')
-                                browser.refresh()
-
-                        browser.find_element(By.PARTIAL_LINK_TEXT, 'Адрес').click()
-
-                        forms = browser.find_elements(By.CSS_SELECTOR,
-                                                      '#bs-tabs-react-right_holders .scope .form-group')
-                        if not forms:
-                            forms = browser.find_elements(By.CSS_SELECTOR, '.scope .scope .scope .scope .scope  .scope')
-
-                        for form in forms:
-                            if 'Район' in form.text:
-                                f = form.find_elements(By.CLASS_NAME, 'fa-check-square-o')
-                                for i in f:
-                                    i.click()
-                                break
-                                    # if 'Тип' in form.text:
-                                    #     i.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
-                                    # elif 'Наименование' in i.text:
-                                    #     i.find_element(By.CLASS_NAME, 'fa-check-square-o').click()
-
-                        btns = browser.find_elements(By.CLASS_NAME, 'btn-primary')
-                        for b in btns:
-                            if b.text == 'Далее':
-                                b.click()
-                                print('далее')
-                        # browser.find_element(By.CSS_SELECTOR,
-                        #                "#tech-error-react input[name='edited_attrs[0][new]'][type='string']") \
-                        #     .send_keys(snils)
-                        # browser.find_element(By.CLASS_NAME, 'fa-plus').click()
-
-                        # browser.find_element(By.CSS_SELECTOR, '#tech-error-react textarea').\
-                        #         send_keys(f'удаление района в городе')
-                        browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-                        while not browser.find_element(By.ID, 'CertListBox').get_attribute("value"):
-                            wait = WebDriverWait(browser, 30)
-                            cert_value_present = wait.until(
-                                EC.presence_of_element_located((By.CSS_SELECTOR, "#CertListBox option[value]")))
-                            print('нет сертификата')
-                        browser.find_element(By.CLASS_NAME, 'btn-next').click()
-                        print("подписать и отправить")
-                        wait = WebDriverWait(browser, 100)
-                        wait_number = wait.until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'alert-success')))
-
-                        res = re.search(r'Other-\d{4}-\d{2}-\d{2}-\d+',
-                                        browser.find_element(By.CLASS_NAME, 'alert-success').text)
-                        if res:
-                            number = res.group()
-                            print(number)
-                        else:
-                            print("Не удалось найти строку с номером обращения")
-                            sys.exit()
-                        browser.close()
-                        browser.switch_to.window(browser.window_handles[0])
-                        break
+                            continue
                     else:
-                        continue
+                        find = False
+                        number = f'{kad_number} обращение не создано'
+                        break
                 else:
                     find = False
                     number = f'{kad_number} обращение не создано'

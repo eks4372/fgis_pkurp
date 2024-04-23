@@ -86,6 +86,14 @@ try:
                 f = group.find_elements(By.CLASS_NAME, 'fa-check')
                 for i in f:
                     i.click()
+            elif 'Корпус' in group.text:
+                try:
+                    if 'корп' == group.find_element(By.CLASS_NAME, 'tech-error-correction').text:
+                        group.find_element(By.CLASS_NAME, 'fa-check').click()
+                        print('правим Корпус')
+                except:
+                    print('корпус пропускаем')
+
                 break
 
         nav_tab = browser.find_element(By.CLASS_NAME, 'nav-tabs')
