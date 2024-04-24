@@ -16,6 +16,16 @@ try:
         print(f'{index + 1} из {len(df)}')
         kad_number = row['Кадастровый №']
         number = row['номер обращения корректировки']
+        adj = row['кор район']
+        adj_k = row['кор корп']
+        if adj == 'ИСТИНА' or adj == '1' or adj == 1:
+            adj = True
+        else:
+            adj = False
+        if adj_k == 'ИСТИНА' or adj_k == '1' or adj_k == 1:
+            adj_k = True
+        else:
+            adj_k = False
         post_link = '/registry_data_containers/statements'
         sved_page = f'{pre_lnk}{number}{post_link}'
         print(sved_page)
@@ -83,15 +93,16 @@ try:
                     EC.presence_of_element_located((By.CLASS_NAME, 'fa-check')))
 
                 # group.find_element(By.CLASS_NAME, 'fa-check').click()
-                f = group.find_elements(By.CLASS_NAME, 'fa-check')
-                for i in f:
-                    i.click()
+                if adj:
+                    f = group.find_elements(By.CLASS_NAME, 'fa-check')
+                    for i in f:
+                        i.click()
             elif 'Корпус' in group.text:
-                try:
+                if adj_k:
                     if 'корп' == group.find_element(By.CLASS_NAME, 'tech-error-correction').text:
                         group.find_element(By.CLASS_NAME, 'fa-check').click()
                         print('правим Корпус')
-                except:
+                else:
                     print('корпус пропускаем')
 
                 break

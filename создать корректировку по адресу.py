@@ -218,6 +218,8 @@ try:
 
         if not df['номер обращения корректировки'].isin([number]).any():
             df.at[index, 'номер обращения корректировки'] = number
+            df.at[index, 'кор район'] = adj
+            df.at[index, 'кор корп'] = adj_k
         else:
             print(f'значение {number} уже существует')
             sys.exit()

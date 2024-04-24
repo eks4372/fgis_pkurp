@@ -74,91 +74,93 @@ try:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
                 # if 'Актуальная' not in reg_f.text:
                 #     continue
-                if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
-                    reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
-                    sleep(1)
-                    try:
-                        element = WebDriverWait(browser, 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, "react-form"))
-                        )
-                    except:
-                        print("не вижу страницы сведений !!")
-                        sys.exit()
+                if 'Запись о вещных' in reg_f.text or 'Запись об ограничениях' in reg_f.text:
+                    if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
+                        reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
+                        sleep(1)
+                        try:
+                            element = WebDriverWait(browser, 10).until(
+                                EC.presence_of_element_located((By.CLASS_NAME, "react-form"))
+                            )
+                        except:
+                            print("не вижу страницы сведений !!")
+                            sys.exit()
         for index_, reg_f in enumerate(reg):
             if (index_ + 1) % 2 != 0:
                 # print(f'По номеру права {reg_num} найдено {int(len(reg) / 2)} записей')
                 # if 'Актуальная' not in reg_f.text:
                 #     continue
-                if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
-                    try:
-                        print(f"Номер права {reg_num} {reg_f.find_element(By.CLASS_NAME, 'text-success').text}")
-                    except:
-                        print(f"Номер права {reg_num} неактуальный")
-                    # reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
-                    try:
-                        element = WebDriverWait(browser, 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, "react-form"))
-                        )
-                    except:
-                        print("не вижу страницы сведений !!")
-                        sys.exit()
+                if 'Запись о вещных' in reg_f.text or 'Запись об ограничениях' in reg_f.text:
+                    if 'Актуальная' in reg_f.text or 'Погашенная' in reg_f.text or 'Архивная' in reg_f.text:
+                        try:
+                            print(f"Номер права {reg_num} {reg_f.find_element(By.CLASS_NAME, 'text-success').text}")
+                        except:
+                            print(f"Номер права {reg_num} неактуальный")
+                        # reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').click()
+                        try:
+                            element = WebDriverWait(browser, 10).until(
+                                EC.presence_of_element_located((By.CLASS_NAME, "react-form"))
+                            )
+                        except:
+                            print("не вижу страницы сведений !!")
+                            sys.exit()
 
-                    t_gropups = browser.find_elements(By.CLASS_NAME, 'tab-group')
-                    for t in t_gropups:
-                        l_menus = t.find_elements(By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']")
-                        if find:
-                            break
-                        for l_menu in l_menus:
-                            # print(len(l_menus))
-                            try:
-                                l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
-                            except:
-                                l_menu.find_element(By.PARTIAL_LINK_TEXT, 'Сведения о лицах').click()
-                                # print('вместо "Сведения о правообладателе" найдено "Сведения о лицах..."')
-                                # m = m + 1
-                                # continue
-                            sleep(1)
-                            m = m + 1
-                            print(f'вошли в запись запись m= {m}')
-                            try:
-                                element = WebDriverWait(browser, 10).until(
-                                    EC.presence_of_element_located((By.CLASS_NAME, "form-group"))
-                                )
-                            except:
-                                print("не вижу страницы сведений !!")
-                            f_groups = browser.find_elements(By.CLASS_NAME, 'form-group')
-                            for group in f_groups:
-                                if group.text == '':
-                                    continue
-                                elif 'Фамилия' in group.text:
-                                    f = group.find_element(By.CLASS_NAME, 'form-control').text
-                                elif 'Имя' in group.text:
-                                    n = group.find_element(By.CLASS_NAME, 'form-control').text
-                                elif 'Отчество' in group.text:
-                                    p = group.find_element(By.CLASS_NAME, 'form-control').text
-                                    # break
-                                    f_n_p = f'{f} {n} {p}'
-                                    f_n_p = f_n_p.strip()
-                                    print(f_n_p)
-                                    if f_n_p == fio:
-                                        if gender == 'Male':
-                                            x = ''
-                                        else:
-                                            x = 'а'
-                                        print(f'{fio} найден{x}')
-                                        find = True
-                                        actual = True
+                        t_gropups = browser.find_elements(By.CLASS_NAME, 'tab-group')
+                        for t in t_gropups:
+                            l_menus = t.find_elements(By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']")
+                            if find:
+                                break
+                            for l_menu in l_menus:
+                                # print(len(l_menus))
+                                try:
+                                    l_menu.find_element(By.LINK_TEXT, 'Сведения о правообладателе').click()
+                                except:
+                                    l_menu.find_element(By.PARTIAL_LINK_TEXT, 'Сведения о лицах').click()
+                                    # print('вместо "Сведения о правообладателе" найдено "Сведения о лицах..."')
+                                    # m = m + 1
+                                    # continue
+                                sleep(1)
+                                m = m + 1
+                                print(f'вошли в запись запись m= {m}')
+                                try:
+                                    element = WebDriverWait(browser, 10).until(
+                                        EC.presence_of_element_located((By.CLASS_NAME, "form-group"))
+                                    )
+                                except:
+                                    print("не вижу страницы сведений !!")
+                                f_groups = browser.find_elements(By.CLASS_NAME, 'form-group')
+                                for group in f_groups:
+                                    if group.text == '':
+                                        continue
+                                    elif 'Фамилия' in group.text:
+                                        f = group.find_element(By.CLASS_NAME, 'form-control').text
+                                    elif 'Имя' in group.text:
+                                        n = group.find_element(By.CLASS_NAME, 'form-control').text
+                                    elif 'Отчество' in group.text:
+                                        p = group.find_element(By.CLASS_NAME, 'form-control').text
                                         # break
-                                    else:
-                                        print(f'{f_n_p} не равно {fio}')
-                                elif 'СНИЛС' in group.text:
-                                    snils_old = group.find_element(By.CLASS_NAME, 'form-control').text
-                                    if find:
-                                        break
-                            else:
-                                if m == int(len(reg) / 2):
-                                    print(f'{fio} не найден в {reg_num}')
-                                    sys.exit()
+                                        f_n_p = f'{f} {n} {p}'
+                                        f_n_p = f_n_p.strip()
+                                        print(f_n_p)
+                                        if f_n_p == fio:
+                                            if gender == 'Male':
+                                                x = ''
+                                            else:
+                                                x = 'а'
+                                            print(f'{fio} найден{x}')
+                                            find = True
+                                            actual = True
+                                            # break
+                                        else:
+                                            print(f'{f_n_p} не равно {fio}')
+                                    elif 'СНИЛС' in group.text:
+                                        snils_old = group.find_element(By.CLASS_NAME, 'form-control').text
+                                        if find:
+                                            break
+                                else:
+                                    if m == int(len(reg) / 2):
+                                        print(f'{fio} не найден в {reg_num}')
+                                        sys.exit()
             else:
                 if find:
                     if snils_old != snils:
