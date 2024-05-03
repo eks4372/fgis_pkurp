@@ -158,37 +158,49 @@ try:
             browser.close()
             browser.switch_to.window(browser.window_handles[0])
 
-            number = post.json()['requests'][0]['appealNumber']
-            print(f'номер обращения: {number}')
-            for i in post.json()['requests']:
-                for u in i['responsibleUsers']:
-                    if 'Специалист кадастровой палаты' in u['roleTitle']:
-                        # fio = u['firstName'] + u['lastName'] + u['secondName']
-                        fio_kad = f"{u['lastName']} {u['firstName']} {u['secondName']}"
-                        date_kad = u['completionDate']
-                    elif u['roleTitle'] == 'Регистратор, принимающий решение':
-                        fio_reg = f"{u['lastName']} {u['firstName']} {u['secondName']}"
-                        date_reg = u['completionDate']
-            print(f'специалист кадастровой палаты: {fio_kad}, дата: {date_kad}')
-            print(f'регистратор, принимающий решение: {fio_reg}, дата: {date_reg}')
+            if not post.json()['requests']:
+                print(f'по номеру книги {kuvd} ответ из ППОЗ не получен')
+                number = f'по номеру книги {kuvd} ответ из ППОЗ не получен'
+                # print(i.text)
+                lines = i.text.split('\n')
+                first_line = lines[0]
+                parts = first_line.split()
+                fio_reg = ' '.join(parts[-3:])
+                df.at[index, 'рег., принимающий решение'] = fio_reg
+            else:
+                number = post.json()['requests'][0]['appealNumber']
+                print(f'номер обращения: {number}')
+                for i in post.json()['requests']:
+                    for u in i['responsibleUsers']:
+                        if 'Специалист кадастровой палаты' in u['roleTitle']:
+                            # fio = u['firstName'] + u['lastName'] + u['secondName']
+                            fio_kad = f"{u['lastName']} {u['firstName']} {u['secondName']}"
+                            date_kad = u['completionDate']
+                        elif u['roleTitle'] == 'Регистратор, принимающий решение':
+                            fio_reg = f"{u['lastName']} {u['firstName']} {u['secondName']}"
+                            date_reg = u['completionDate']
+                print(f'специалист кадастровой палаты: {fio_kad}, дата: {date_kad}')
+                print(f'регистратор, принимающий решение: {fio_reg}, дата: {date_reg}')
 
-            df.at[index, 'дата снятия а учета'] = second_date
-            df.at[index, 'номер обращения'] = number
-            df.at[index, 'номер КУВД'] = kuvd
-            df.at[index, 'специалист кад. палаты'] = fio_kad
-            df.at[index, 'дата завершения кад'] = date_kad
-            df.at[index, 'рег., принимающий решение'] = fio_reg
-            df.at[index, 'дата завершения рег'] = date_reg
+                df.at[index, 'дата снятия а учета'] = second_date
+                df.at[index, 'номер обращения'] = number
+                df.at[index, 'номер КУВД'] = kuvd
+                df.at[index, 'специалист кад. палаты'] = fio_kad
+                df.at[index, 'дата завершения кад'] = date_kad
+                df.at[index, 'рег., принимающий решение'] = fio_reg
+                df.at[index, 'дата завершения рег'] = date_reg
+                df.at[index, 'актуальное'] = actual
+                # print(df)
+        else:
             df.at[index, 'актуальное'] = actual
-            # print(df)
 
-            # break
-            obr = obr + 1
-            print(f'[INFO] отработано {obr} ({round(obr / len(df) * 100, 2)} %) обращений из {len(df)},'
-                  f' осталось {len(df) - obr}')
-            # записываем номер пакета в файл
-            with open(fname, 'a+') as f:
-                f.write(kad_number + '\n')
+        # break
+        obr = obr + 1
+        print(f'[INFO] отработано {obr} ({round(obr / len(df) * 100, 2)} %) обращений из {len(df)},'
+              f' осталось {len(df) - obr}')
+        # записываем номер пакета в файл
+        with open(fname, 'a+') as f:
+            f.write(kad_number + '\n')
 except:
     df.to_excel(f'{now}часть архивных номеров проконтролированых.xlsx', index=False)
     print('аварийное завершение !')
