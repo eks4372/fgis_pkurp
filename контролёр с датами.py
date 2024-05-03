@@ -175,7 +175,7 @@ try:
                     print(post.text)
                     sys.exit()
         if not find:
-            print(f'[ERROR] запись с кадастровым номером {kad_number} входит в дату  {start_date} - {end_date}')
+            print(f'[ERROR] запись с кадастровым номером {kad_number} не входит в дату  {start_date} - {end_date}')
             # записываем номер пакета в файл
             with open(fname, 'a+') as f:
                 f.write(kad_number + '\n')
@@ -190,7 +190,7 @@ try:
             with open(err_file, flag) as f:
                 err += 1
                 f.write(
-                    f'[ERROR] запись с кадастровым номером {kad_number} входит в дату  {start_date} - {end_date}' + '\n'
+                    f'[ERROR] запись с кадастровым номером {kad_number} не входит в дату  {start_date} - {end_date}' + '\n'
                 )
             continue
         browser.close()

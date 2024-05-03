@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import re
 import json
+
 FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
 
 
@@ -40,11 +41,12 @@ def logon(url, browser, login, password):
             print("ЗАЛОГИНЬТЕСЬ УЖЕ !")
             sleep(15)
     if "Превышено количество одновременных сессий" in page_source:
-        browser.find_element(By.XPATH,'/html/body/div/main/div/section/article/div/form/div/div[3]/div[1]/button').click()
+        browser.find_element(By.XPATH,
+                             '/html/body/div/main/div/section/article/div/form/div/div[3]/div[1]/button').click()
         sleep(1)
         page_source = browser.page_source
     if "Выберите вашу часовую зону" in page_source:
-        browser.find_element(By.XPATH,'/html/body/div[3]/div/div/div[2]/div/div[2]/button').click()
+        browser.find_element(By.XPATH, '/html/body/div[3]/div/div/div[2]/div/div[2]/button').click()
         sleep(1)
         alert_obj = browser.switch_to.alert
         alert_obj.accept()
@@ -80,7 +82,7 @@ def take_face(browser, link):
             return (f, f_)
 
 
-def make_dir(dir: str, remove: bool = False, append: bool = True):
+def make_dir(dir: str, remove: bool = False, append: bool = True) -> str:
     """remove — пересоздавать ли папку, если она есть
     append — только если remove = False, оставлять ли папку без изменений, если она есть
     почти как os.makedirs('F:\\torrents\\bun', exist_ok=True) ,
@@ -180,7 +182,7 @@ def num_list(list: list, n: int = 0):
             else:
                 break
         i = 0
-        w = w +1
+        w = w + 1
         # print('w= ', w)
     if list:
         l.append(list)
@@ -188,7 +190,6 @@ def num_list(list: list, n: int = 0):
 
 
 def take_face_(browser, reg_num, subject, inn, reg_name):
-
     def are_you_sure():
         answer = input(f'ответте утвердительно для продолжения, отрицательно для завершения программы \n'
                        f'или введите искомую фамилию (наименование) и тип лица: 1 - физ лицо, 2 - юр лицо \n'
@@ -258,7 +259,7 @@ def take_face_(browser, reg_num, subject, inn, reg_name):
                 print("не вижу страницы сведений !!")
 
     sleep(1)
-    l_menus = browser.find_element(By.CSS_SELECTOR, "*[class^='panel-group item']")\
+    l_menus = browser.find_element(By.CSS_SELECTOR, "*[class^='panel-group item']") \
         .find_elements(By.CSS_SELECTOR, "*[class^='nav nav-tabs js-fixed']")
     m = 0
     for l_menu in l_menus:
@@ -339,12 +340,12 @@ def serch_fio(f, f_):
     f = f.split()
     n = 0
     for i in f:
-        if i.lower().replace('ё','е') in f_.lower().replace('ё','е'):
+        if i.lower().replace('ё', 'е') in f_.lower().replace('ё', 'е'):
             n = n + 1
     return n
 
 
-def serch_snils(s:str):
+def serch_snils(s: str):
     """ищет и возвращает СНИЛС в строке"""
     result = re.search(r'\d{3}-\d{3}-\d{3} \d{2}', s)
     if result:
@@ -353,7 +354,7 @@ def serch_snils(s:str):
         return False
 
 
-def serch_ogrn(s:str):
+def serch_ogrn(s: str):
     """ищет и возвращает СНИЛС в строке"""
     result = re.search(r'\d{13}', s)
     if result:
@@ -362,7 +363,7 @@ def serch_ogrn(s:str):
         return False
 
 
-def distr_json(file, write = False, d = None):
+def distr_json(file, write=False, d=None):
     """возвращает словарь из файла json
     или записывает словарь в файл json"""
     if not write:
