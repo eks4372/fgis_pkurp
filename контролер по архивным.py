@@ -167,6 +167,7 @@ try:
                 parts = first_line.split()
                 fio_reg = ' '.join(parts[-3:])
                 df.at[index, 'рег., принимающий решение'] = fio_reg
+                df.at[index, 'актуальное'] = actual
             else:
                 number = post.json()['requests'][0]['appealNumber']
                 print(f'номер обращения: {number}')
