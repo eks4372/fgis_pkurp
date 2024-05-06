@@ -153,7 +153,7 @@ try:
                     flag = 'w'
                 with open(err_file, flag) as f:
                     err += 1
-                    f.write(f'[ERROR] у записи с кадастровым номером {kad_number} не нашел в истории нужную запись')
+                    f.write(f'[ERROR] у записи с кадастровым номером {kad_number} не нашел в истории нужную запись' + '\n')
                 continue
             browser.close()
             browser.switch_to.window(browser.window_handles[0])
