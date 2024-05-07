@@ -18,6 +18,7 @@ try:
         number = row['номер обращения корректировки']
         adj = row['кор район']
         adj_k = row['кор корп']
+        adj_kv = row['кор квартиры']
         if adj == 'ИСТИНА' or adj == '1' or adj == 1:
             adj = True
         else:
@@ -26,6 +27,10 @@ try:
             adj_k = True
         else:
             adj_k = False
+        if adj_kv == 'ИСТИНА' or adj_kv == '1' or adj_kv == 1:
+            adj_kv = True
+        else:
+            adj_kv = False
         post_link = '/registry_data_containers/statements'
         sved_page = f'{pre_lnk}{number}{post_link}'
         print(sved_page)
@@ -84,6 +89,8 @@ try:
         except:
             print("не вижу страницы сведений !!")
         f_groups = browser.find_elements(By.CSS_SELECTOR, '.scope .scope .scope .scope .scope  .scope')
+        if not f_groups:
+            f_groups = browser.find_elements(By.CSS_SELECTOR, '.scope .scope .scope .scope .scope')
         for group in f_groups:
             if group.text == '':
                 continue
@@ -104,6 +111,14 @@ try:
                         print('правим Корпус')
                 else:
                     print('корпус пропускаем')
+            elif 'Квартира' in group.text:
+                if adj_kv:
+                    f = group.find_elements(By.CLASS_NAME, 'fa-check')
+                    for i in f:
+                        i.click()
+                        print('правим Квартиру')
+                else:
+                    print('квартиру пропускаем')
 
                 break
 
