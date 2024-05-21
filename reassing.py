@@ -12,6 +12,7 @@ settings = configparser.ConfigParser()
 settings.read('settings.ini', encoding="utf-8")
 
 err = ''
+r_err = ''
 
 data = return_id()
 login = data[0]
@@ -86,6 +87,21 @@ while True:
                     f.write(n + '\n')
                     p = p + 1
                 f.close()
+            # сравнение списков переназначенных номеров и отправленных
+            if len(number) != len(post.json()['requestNumbers']):
+                print('! в запросе ошибок нет, но не все пакеты переназначились !')
+                print(f'из {len(number)} пакетов не назначилось {len(post.json()["requestNumbers"])}')
+                print(post.json()['requestNumbers'])
+                result_not = list(set(number) ^ set(post.json()['requestNumbers']))
+                r_err = myfunctions.make_dir('errors')
+                not_r_file = f'{r_err}/not_reassing_numbers.txt'
+                if os.path.isfile(not_r_file):
+                    flag = 'a'
+                else:
+                    flag = 'w'
+                with open(not_r_file, flag) as f:
+                    for n in result_not:
+                        f.write(n + '\n')
         elif 400 <= post.status_code < 500:
             print('клиентская ошибка')
             err = myfunctions.make_dir('errors')
@@ -117,6 +133,11 @@ while True:
         myfunctions.explore(err)
         os.startfile(f'{err}\\err_numbers.txt', 'open')
         err = ''
+    if r_err:
+        input(f'[ВНИМАНИЕ !!!] есть непереназначенные пакеты, проверьте папку {r_err}')
+        myfunctions.explore(r_err)
+        os.startfile(f'{r_err}\\not_reassing_numbers.txt', 'open')
+        r_err = ''
     data = return_id()
     if not data:
         break
