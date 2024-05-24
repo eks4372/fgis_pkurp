@@ -104,6 +104,9 @@ try:
                     f = group.find_elements(By.CLASS_NAME, 'fa-check')
                     for i in f:
                         i.click()
+                    print('правим район')
+                else:
+                    print('район пропускаем')
             elif 'Корпус' in group.text:
                 if adj_k:
                     if 'корп' == group.find_element(By.CLASS_NAME, 'tech-error-correction').text:
@@ -116,7 +119,7 @@ try:
                     f = group.find_elements(By.CLASS_NAME, 'fa-check')
                     for i in f:
                         i.click()
-                        print('правим Квартиру')
+                    print('правим Квартиру')
                 else:
                     print('квартиру пропускаем')
 
