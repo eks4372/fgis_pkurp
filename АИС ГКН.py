@@ -31,9 +31,11 @@ df = pd.read_excel(file)
 a = 0
 correct = [1, 2, 3]
 while a not in correct:
-    a = int(input('искать ОКС в 1 - актуальных, 2- архивных, 3 - анулированных (по умолчанию 1): '))
+    a = input('искать ОКС в 1 - актуальных, 2- архивных, 3 - анулированных (по умолчанию 1): ')
     if not a:
         a = 1
+    else:
+        a = int(a)
 
 options = webdriver.ChromeOptions()
 options.add_argument("start-maximized")
