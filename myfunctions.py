@@ -374,3 +374,27 @@ def distr_json(file, write=False, d=None):
         with open(file, 'w') as f:
             f.write(json.dumps(d, ensure_ascii=False, indent=2))
         return True
+
+
+def take_file_name(name, ext, full_name=True, return_dict=False):
+    """принимает имя файла и возвращает в нужном формате"""
+    ext = '.' + ext
+    if ext in name:
+        f_name = name
+        name = name.replace(ext, '')
+    else:
+        name = name
+        f_name = f'{name}{ext}'
+    if return_dict:
+        return {'name': name, 'ext': ext[1:], 'full_name': f_name}
+    else:
+        if full_name:
+            return f_name
+        else:
+            return name
+
+# if __name__ == '__main__':
+#     out_file = take_file_name('qwe', 'xlsx', False, True)
+#     t = out_file['name'] + '_' + '.' + out_file['ext']
+#     print(t)
+

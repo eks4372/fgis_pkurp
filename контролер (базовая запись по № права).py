@@ -151,7 +151,7 @@ try:
                     "pageSize": 10,
                     "idKUVD": kuvd,
                     "objectRegions": [
-                        "72"
+                        "00", "72"
                     ],
                     "byActiveExecutor": True
                 }
