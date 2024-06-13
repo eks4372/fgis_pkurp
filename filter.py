@@ -41,6 +41,11 @@ try:
         print(link)
 
         browser.get(unquote(link))
+        if 'Сведения, удовлетворяющие запросу, не найдены.' in browser.page_source:
+            link = f'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?search[record.law_number]={reg_num}{post_link}'
+        print(link)
+
+        browser.get(unquote(link))
         if "Возникла ошибка на сервере" in browser.page_source:
             print('ошибка сервера, пробую обновить страницу')
             browser.refresh()
