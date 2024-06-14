@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import re
 import json
+from urllib.parse import unquote
 
 FILEBROWSER_PATH = os.path.join(os.getenv('WINDIR'), 'explorer.exe')
 
@@ -355,7 +356,7 @@ def serch_snils(s: str):
 
 
 def serch_ogrn(s: str):
-    """ищет и возвращает СНИЛС в строке"""
+    """ищет и возвращает ОГРН в строке"""
     result = re.search(r'\d{13}', s)
     if result:
         return result[0]
@@ -393,8 +394,94 @@ def take_file_name(name, ext, full_name=True, return_dict=False):
         else:
             return name
 
-# if __name__ == '__main__':
-#     out_file = take_file_name('qwe', 'xlsx', False, True)
-#     t = out_file['name'] + '_' + '.' + out_file['ext']
-#     print(t)
+
+def find_reg_munber(browser, fio, k_numbers, t, inn):
+    """возвращает найденые рег. записи прав и вид права"""
+    r_numbers = []
+    v_reg = []
+    ok =True
+    pre_lnk = 'http://pkurp-app-balancer-01.prod.egrn/search/tabs/record?search[record.property_number]='
+    post_link = '&commit=Запросить'
+
+    for kad_number in k_numbers:
+        if t != '1':
+            if '  ' in fio:
+                fio = fio.replace('  ', ' ')
+            link = f'{pre_lnk}{kad_number}&search[individual.surname]={fio.split()[0]}&search[individual.name]={fio.split()[1]}{post_link}'
+        else:
+            link = f'{pre_lnk}{kad_number}&search[legal_entity.inn]={inn}{post_link}'
+        print(link)
+
+        browser.get(unquote(link))
+        sleep(1)
+        if "Выберите вашу часовую зону" in browser.page_source:
+            try:
+                browser.find_element(By.XPATH, '/html/body/div[3]/div/div/div[2]/div/div[2]/button').click()
+                sleep(1)
+                alert_obj = browser.switch_to.alert
+                alert_obj.accept()
+            except:
+                print('no alert')
+        if "Возникла ошибка на сервере" in browser.page_source:
+            print('ошибка сервера, пробую обновить страницу')
+            browser.refresh()
+        try:
+            element = WebDriverWait(browser, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "*[class^='panel-group item']")))
+        except:
+            print("не вижу рег записи !!")
+            # try:
+            #     link = f'{pre_lnk}{kad_number}&search[record.law_number]={reg_num}{post_link}'
+            #     print(link)
+            #     browser.get(unquote(link))
+            # except:
+            #     print("всёравно не вижу рег записи !!")
+        if 'Сведения, удовлетворяющие запросу, не найдены.' in browser.page_source:
+            continue
+        t_body = browser.find_element(By.CSS_SELECTOR, "*[class^='panel-group item']")
+        reg = t_body.find_elements(By.TAG_NAME, 'tr')
+        for index_, reg_f in enumerate(reg):
+            if (index_ + 1) % 2 != 0:
+                if 'Запись о вещных правах' in reg_f.text and 'Актуальная' in reg_f.text:
+                    r_numbers.append(reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').text)
+                    print(f"найдено № рег. права: {reg_f.find_element(By.CLASS_NAME, 'js-search-loadable').text}")
+                    td = reg_f.find_elements(By.TAG_NAME, 'td')
+                    vid = td[2].text
+                    v_reg.append(vid)
+                    print(vid)
+    if len(r_numbers) != len(v_reg):
+        print(f'[!!!ВНИМАНИЕ!!!]кадастровых {len(r_numbers)}, а прав {len(v_reg)}')
+        ok =False
+    return r_numbers, v_reg, ok
+
+
+def is_folder_empty(folder_path):
+    return not any(True for _ in os.scandir(folder_path))
+
+
+
+import os
+
+def find_and_write_files(extension, output_file):
+    files_list = [file for file in os.listdir() if file.endswith(extension)]
+
+    with open(output_file, 'w') as file:
+        for file_name in files_list:
+            file.write(file_name + '\n')
+
+    print(f"Найденные файлы с расширением '{extension}' были записаны в файл '{output_file}'")
+
+# Пример вызова функции
+# extension = '.txt'
+# output_file = 'found_files_list.txt'
+# find_and_write_files(extension, output_file)
+
+
+if __name__ == '__main__':
+    # out_file = take_file_name('qwe', 'xlsx', False, True)
+    # t = out_file['name'] + '_' + '.' + out_file['ext']
+    # print(t)
+    extension = '.json'
+    output_file = 'found_files_list.txt'
+    find_and_write_files(extension, output_file)
 

@@ -16,6 +16,10 @@ def xml_parser(url_xml):
         inn = root_node.find(".//DebtorINN").text  # ИНН
     except:
         inn = '-'
+    try:
+        t = root_node.find(".//DebtorType").text  # тип (1-юр, 2-физ)
+    except:
+        t = '-'
     kad_number = []
     kad_numbers = root_node.findall(".//KadastrN")
     for number in kad_numbers:
@@ -33,6 +37,6 @@ def xml_parser(url_xml):
     if cod == 'O_IP_ACT_ENDBAN_REG':
         ban_num = root_node.find(".//RestrDocNumber").text  # номер нажожения ареста
         ban_date = root_node.find(".//RestrDocDate").text  # дата нажожения ареста
-        return cod, fio, ip_num, num, osp, i_key, kad_number, reg_number, inn, reg_name, doc_date, ban_num, ban_date
+        return cod, fio, ip_num, num, osp, i_key, kad_number, reg_number, inn, reg_name, doc_date, ban_num, ban_date, t
     else:
-        return cod, fio, ip_num, num, osp, i_key, kad_number, reg_number, inn, reg_name, doc_date, '-', '-'
+        return cod, fio, ip_num, num, osp, i_key, kad_number, reg_number, inn, reg_name, doc_date, '-', '-', t

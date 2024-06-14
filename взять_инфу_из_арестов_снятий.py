@@ -125,6 +125,25 @@ for number in numbers:
 
     data = take_data_from_xml()
     print(data)
+    if not data[7]:
+        t = data[13]
+        print('нет сведений о рег. номерах')
+        d = myfunctions.find_reg_munber(browser, data[1], data[6], t, data[8])
+        reg_n = d[0]
+        v = d[1]
+        if not d[2]:
+            dir_w = myfunctions.make_dir('ВНИМАНИЕ')
+            w_file = f'{dir_w}/warning_numbers.txt'
+            if os.path.isfile(w_file):
+                flag = 'a'
+            else:
+                flag = 'w'
+            with open(w_file, flag) as f:
+                f.write(f'{number} [ВНИМАНИЕ] число рег номеров не равно кадастровым номерам ')
+    else:
+        reg_n = data[7]
+        v = data[9]
+
     # записываем в файл
     ext = 'json'
     if data[0] == 'O_IP_ACT_BAN_REG':
@@ -137,8 +156,9 @@ for number in numbers:
     to_json = {
         number: {'Вид постановления': data[0], 'ФИО': data[1], 'идентификатор': data[2], '№ постановления': data[3],
                  'код подразделения': data[4], 'уникальный ид': data[5], 'кадастровый номер': data[6]
-            , 'номер регистрации': data[7], 'вид права': data[9], 'ИНН': data[8], 'дата документа': data[10],
-                 '№ постановления об аресте': data[11], 'дата постановления об аресте': data[12], 'xml_link': link_xml}}
+            , 'номер регистрации': reg_n, 'вид права': v, 'ИНН': data[8], 'дата документа': data[10],
+                 '№ постановления об аресте': data[11], 'дата постановления об аресте': data[12],'type': data[13],
+                 'xml_link': link_xml}}
     values = to_json[number].values()
     if '' in values or [] in values:  # num_data[number]["номер регистрации"]:
         print(f'[WARNING !] {number}, косячный, не все ключи заполнены')
@@ -260,6 +280,14 @@ if a in y:
 a = input("скопировать номера снятий в numbers_unban.txt ? :")
 if a in y:
     shutil.copyfile(f'{path_unban}\\номера_обращений_снятий.txt', 'numbers_unban.txt')
+try:
+    if myfunctions.is_folder_empty('ВНИМАНИЕ'):
+        print("Папка 'ВНИМАНИЕ' пуста.")
+    else:
+        print("Папка 'ВНИМАНИЕ' не пуста.")
+        myfunctions.explore('ВНИМАНИЕ')
+except:
+    print('ok')
 if errors:
     input(f'[ВНИМАНИЕ !!!] есть неверно заполненные пакеты, проверьте папку {errors}')
     myfunctions.explore(errors)
